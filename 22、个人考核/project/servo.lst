@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   SERVO                                                                 07/11/2026 09:55:06 PAGE 1   
+C51 COMPILER V9.54   SERVO                                                                 07/11/2026 13:28:33 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE SERVO
@@ -62,7 +62,7 @@ line level    source
   52   1              char i;
   53   1              EA_off; //�ر��жϷ����Ӱ����ת��
   54   1              for(i=0;i<10;i++)
-C51 COMPILER V9.54   SERVO                                                                 07/11/2026 09:55:06 PAGE 2   
+C51 COMPILER V9.54   SERVO                                                                 07/11/2026 13:28:33 PAGE 2   
 
   55   1              {
   56   2                      ServoPin = 1;

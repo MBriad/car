@@ -7,58 +7,59 @@
 #include "Servo.h"
 #include "app.h"
 #include "main.h"
+#include <reg52.h>
 
-bit Timer1Overflow;	//¼ÆÊýÆ÷1Òç³ö±êÖ¾Î»
-bit Timer2Overflow; //¼ÆÊýÆ÷2Òç³ö±êÖ¾Î»
+bit Timer1Overflow;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+bit Timer2Overflow; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
 
 
 uchar code ASCII[13] = "0123456789";
-uchar disbuff[4]={0,0,0,0};//ÓÃÓÚ·Ö±ð´æ·Å¾àÀëµÄÖµÃ×£¬ÀåÃ×£¬ºÁÃ×
+uchar disbuff[4]={0,0,0,0};//ï¿½ï¿½ï¿½Ú·Ö±ï¿½ï¿½Å¾ï¿½ï¿½ï¿½ï¿½Öµï¿½×£ï¿½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½ï¿½ï¿½
 
-uint LeftDistance = 0, RightDistance = 0, FrontDistance = 0; //ÔÆÌ¨²â¾à¾àÀë»º´æ
-uint My_Distance,RearDistance; //¶¨ÒåÐÂÔö³¬Éù²¨²â¾àµÄ¾àÀë
+uint LeftDistance = 0, RightDistance = 0, FrontDistance = 0; //ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ë»ºï¿½ï¿½
+uint My_Distance,RearDistance; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
 
 uint DistBuf[5] = {0};//distance data buffer
 
 uchar code ASCII_2[13] = "0123456789";
-uchar disbuff_2[4]={0,0,0,0};//ÓÃÓÚ·Ö±ð´æ·ÅÐÂÔö³¬Éù²¨¾àÀëµÄÖµÃ×£¬ÀåÃ×£¬ºÁÃ×
-uint  DistBuf_2[5] = {0};//¶¨ÒåÐÂÔö³¬Éù²¨¾àÀëµÄ»º´æ
+uchar disbuff_2[4]={0,0,0,0};//ï¿½ï¿½ï¿½Ú·Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½×£ï¿½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½ï¿½ï¿½
+uint  DistBuf_2[5] = {0};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½
 
 /*====================================
-º¯ÊýÃû	£ºDispDistance(unsigned long Val)
-²ÎÊý	£º¾àÀë
-·µ»ØÖµ	£ºÎÞ
-ÃèÊö	£ºLCD1602ÏÔÊ¾¾àÀë
-ÏÔÊ¾¾àÀëµ¥Î»£ººÁÃ×
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½DispDistance(unsigned long Val)
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½Öµ	ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ====================================*/
 void DispDistance(unsigned int Val)
 {
-	if((Val >= 5000) || (Timer1Overflow == 1))//³¬³ö²âÁ¿·¶Î§
+	if((Val >= 5000) || (Timer1Overflow == 1))//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
 	{
-		Timer1Overflow = 0; //Çå³ý¶¨Ê±Æ÷Òç³ö±êÖ¾Î»
-		LCD1602_Dis_Str(0, 0, "!!! Out of range"); //LCD1602ÏÔÊ¾×Ö·û´®	
+		Timer1Overflow = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+		LCD1602_Dis_Str(0, 0, "!!! Out of range"); //LCD1602ï¿½ï¿½Ê¾ï¿½Ö·ï¿½ï¿½ï¿½	
 	}
 	else
 	{
-		/*ÏÔÊ¾¾àÀëµ¥Î»ºÁÃ×*/
-		disbuff[0]=Val/1000; //¾àÀëÊýÖµÇ§Î»
-		disbuff[1]=Val%1000/100;//¾àÀëÊýÖµ°ÙÎ»
-		disbuff[2]=Val%100/10;//¾àÀëÊýÖµÊ®Î»
-		disbuff[3]=Val%10; //¾àÀëÊýÖµ¸öÎ»
-		LCD1602_Dis_Str(0, 0, "Distance:0000 MM"); //ÏÔÊ¾£ºDistance:000.0cm
-	    LCD1602_Dis_OneChar(9, 0,  ASCII[disbuff[0]]); //ÏÔÊ¾Ç§Î»
+		/*ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½*/
+		disbuff[0]=Val/1000; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÇ§Î»
+		disbuff[1]=Val%1000/100;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+		disbuff[2]=Val%100/10;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÊ®Î»
+		disbuff[3]=Val%10; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+		LCD1602_Dis_Str(0, 0, "Distance:0000 MM"); //ï¿½ï¿½Ê¾ï¿½ï¿½Distance:000.0cm
+	    LCD1602_Dis_OneChar(9, 0,  ASCII[disbuff[0]]); //ï¿½ï¿½Ê¾Ç§Î»
 	    LCD1602_Dis_OneChar(10, 0, ASCII[disbuff[1]]);	
 	    LCD1602_Dis_OneChar(11, 0, ASCII[disbuff[2]]);	
 	    LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]); 				
 	}		
 }
-//Ã°ÅÝÅÅÐò
-void bubble(unsigned int *a,unsigned char n) /*¶¨ÒåÁ½¸ö²ÎÊý£ºÊý×éÊ×µØÖ·ÓëÊý×é´óÐ¡*/
+//Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void bubble(unsigned int *a,unsigned char n) /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×µï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡*/
 {
 	unsigned int i,j,temp;	
 	for(i = 0;i < n-1; i++)	
 	{	
-		for(j = i + 1; j < n; j++) /*×¢ÒâÑ­»·µÄÉÏÏÂÏÞ*/
+		for(j = i + 1; j < n; j++) /*×¢ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		{
 			if(a[i] > a[j])
 			{
@@ -71,11 +72,11 @@ void bubble(unsigned int *a,unsigned char n) /*¶¨ÒåÁ½¸ö²ÎÊý£ºÊý×éÊ×µØÖ·ÓëÊý×é´óÐ
 
 }
 /*====================================
-º¯ÊýÃû	£ºRefreshDistance
-²ÎÊý	£ºÎÞ
-·µ»ØÖµ	£º¾­¹ýÃ°ÅÝÅÅÐòºóµÄ¾àÀë
-ÃèÊö	£º¾­¹ý5´Î²â¾à£¬È¥³ý×î´óÖµºÍ×îÐ¡Öµ£¬È¡ÖÐ¼ä3´ÎÆ½¾ùÖµ
-¾àÀëµ¥Î»£ººÁÃ×
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½RefreshDistance
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½Öµ	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½5ï¿½Î²ï¿½à£¬È¥ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ð¡Öµï¿½ï¿½È¡ï¿½Ð¼ï¿½3ï¿½ï¿½Æ½ï¿½ï¿½Öµ
+ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ====================================*/
 unsigned int RefreshDistance()
 {
@@ -84,63 +85,63 @@ unsigned int RefreshDistance()
 	for(num=0; num<5; num++)
 	{
 		DistBuf[num] = GetDistance();
-		Delay1ms(60);//²â¾àÖÜÆÚ²»µÍÓÚ60ºÁÃë	
+		Delay1ms(60);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½	
 	}
 	bubble(DistBuf, 5);//
-	Dist = (DistBuf[1]+DistBuf[2]+DistBuf[3])/3; //È¥µô×î´óºÍ×îÐ¡È¡ÖÐ¼äÆ½¾ùÖµ
+	Dist = (DistBuf[1]+DistBuf[2]+DistBuf[3])/3; //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡È¡ï¿½Ð¼ï¿½Æ½ï¿½ï¿½Öµ
 	return(Dist);
 }
-/*ºìÍâ±ÜÕÏ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 void IR_Avoid()
 {
 	if(UAvoidSensorLeft == 0)
 	{
-		SmartCarRight(LeftSpeed, RightSpeed);//ÓÒ×ª	
+		SmartCarRight(LeftSpeed, RightSpeed);//ï¿½ï¿½×ª	
 	}else if(UAvoidSensorRight == 0)
 	{
-		SmartCarLeft(LeftSpeed, RightSpeed);//×ó×ª		
+		SmartCarLeft(LeftSpeed, RightSpeed);//ï¿½ï¿½×ª		
 	}else
 	{
-		SmartCarForward(LeftSpeed, RightSpeed);//Ç°½ø	
+		SmartCarForward(LeftSpeed, RightSpeed);//Ç°ï¿½ï¿½	
 	}
 }
 /*====================================
-º¯ÊýÃû	£ºPTZ_Avoid
-²ÎÊý	£ºvalÉèÖÃ±ÜÕÏ´¥·¢¾àÀë
-·µ»ØÖµ	£ºÎÞ
-ÃèÊö	£ºÖÇÄÜÐ¡³µ¶æ»úÔÆÌ¨±ÜÕÏ
-¾àÀëµ¥Î»£ººÁÃ×
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½PTZ_Avoid
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½valï¿½ï¿½ï¿½Ã±ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½Öµ	ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ====================================*/
 void PTZ_Avoid(uint val)
 {
-	uint Dis;//¾àÀëÔÝ´æ±äÁ¿
-	Dis = GetDistance();//»ñÈ¡³¬Éù²¨²â¾à¾àÀë,µ¥Î»£ººÁÃ×
+	uint Dis;//ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½
+	Dis = GetDistance();//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(Dis < val)
 	{
 		LCD1602_Dis_OneChar(0, 0, 'D');
-		DispDistance(Dis);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë	
-		SmartCarStops();	//Í£³µ
+		DispDistance(Dis);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	
+		SmartCarStops();	//Í£ï¿½ï¿½
 		Delay1ms(50);
 
-		/*¶æ»ú×ó×ª²â¾à*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½*/
 		ServoLeft();
 		LeftDistance = RefreshDistance();
 		LCD1602_Dis_OneChar(0, 0, 'L');
-		DispDistance(LeftDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+		DispDistance(LeftDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Delay1ms(50);
 
-		/*¶æ»úÓÒ×ª²â¾à*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½*/
 		ServoRight();
 		RightDistance = RefreshDistance();
 		LCD1602_Dis_OneChar(0, 0, 'R');
-		DispDistance(RightDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+		DispDistance(RightDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Delay1ms(50);
 
-		/*¶æ»úÕýÇ°·½²â¾à*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		ServoFront();
 		FrontDistance = RefreshDistance();
 		LCD1602_Dis_OneChar(0, 0, 'F');
-		DispDistance(FrontDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+		DispDistance(FrontDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Delay1ms(50);
 
 
@@ -148,70 +149,70 @@ void PTZ_Avoid(uint val)
 		if((FrontDistance<100) && (LeftDistance<100) && (RightDistance<100))
 		{
 			do{
-				SmartCarLeftTurn(255, 255);//Ô­µØ×ó×ª
+				SmartCarLeftTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
 				Delay1ms(50);
-				/*¶æ»úÕýÇ°·½²â¾à*/
+				/*ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½*/
 				ServoFront();
 				Dis = RefreshDistance();
 				LCD1602_Dis_OneChar(0, 0, 'D');
-				DispDistance(Dis);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+				DispDistance(Dis);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				Delay1ms(100);		
 			}while(Dis < 200);
 		}else if((FrontDistance>LeftDistance) && (FrontDistance>RightDistance))
 		{
 			LCD1602_Dis_OneChar(0, 0, 'F');
-			DispDistance(FrontDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+			DispDistance(FrontDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			Delay1ms(100);
-			SmartCarForward(LeftSpeed, RightSpeed);//Ç°½ø
+			SmartCarForward(LeftSpeed, RightSpeed);//Ç°ï¿½ï¿½
 		}else if(LeftDistance > RightDistance)
 		{
 			LCD1602_Dis_OneChar(0, 0, 'L');
-			DispDistance(LeftDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+			DispDistance(LeftDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			Delay1ms(100);
-			SmartCarLeftTurn(255, 255);//Ô­µØ×ó×ª
+			SmartCarLeftTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
 			Delay1ms(80);		
 		}else if(RightDistance > LeftDistance)
 		{
 			LCD1602_Dis_OneChar(0, 0, 'R');
-			DispDistance(RightDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+			DispDistance(RightDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			Delay1ms(100);
-			SmartCarRightTurn(255, 255);//Ô­µØÓÒ×ª
+			SmartCarRightTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
 			Delay1ms(80);	
 		}		
 	}
 	else
 	{
-		for(Dis=0; Dis<1800; Dis++)//²â¾àÖÜÆÚ²»µÍÓÚ60ms ÕâÀï½èÓÃDis±äÁ¿×öÑ­»·
+		for(Dis=0; Dis<1800; Dis++)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ms ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Disï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½
 		{
-			IR_Avoid();//ºìÍâ±ÜÕÏ
+			IR_Avoid();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
 	}			
 }
 
 /**************************************/
- //ÐÂ³¬Éù²¨Ä£¿éµÄ¾àÀëÏÔÊ¾º¯Êý£¬ÏÔÊ¾ÔÚLCDµÄµÚ¶þÐÐ£¬µÚÒ»ÐÐÏÔÊ¾ÁËÔ­À´³¬Éù²¨µÄ¾àÀë
+ //ï¿½Â³ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½LCDï¿½ÄµÚ¶ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
 void My_DispDistance(unsigned int Val)	
 {
-	if((Val >= 2500) || (Timer2Overflow == 1))//³¬³ö²âÁ¿·¶Î§
+	if((Val >= 2500) || (Timer2Overflow == 1))//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
 	{
-		Timer2Overflow = 0; //Çå³ý¶¨Ê±Æ÷Òç³ö±êÖ¾Î»
-		LCD1602_Dis_Str(0, 1, "!!! Out of range"); //LCD1602ÏÔÊ¾×Ö·û´®	
+		Timer2Overflow = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+		LCD1602_Dis_Str(0, 1, "!!! Out of range"); //LCD1602ï¿½ï¿½Ê¾ï¿½Ö·ï¿½ï¿½ï¿½	
 	}
 	else
 	{
-		/*ÏÔÊ¾¾àÀëµ¥Î»ºÁÃ×*/
-		disbuff_2[0]=Val/1000; //¾àÀëÊýÖµÇ§Î»
-		disbuff_2[1]=Val%1000/100;//¾àÀëÊýÖµ°ÙÎ»
-		disbuff_2[2]=Val%100/10;//¾àÀëÊýÖµÊ®Î»
-		disbuff_2[3]=Val%10; //¾àÀëÊýÖµ¸öÎ»
-		LCD1602_Dis_Str(0, 1, "Distance:0000 MM"); //ÏÔÊ¾£ºDistance:000.0cm
-	    LCD1602_Dis_OneChar(9, 1,  ASCII_2[disbuff_2[0]]); //ÏÔÊ¾Ç§Î»
+		/*ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½*/
+		disbuff_2[0]=Val/1000; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÇ§Î»
+		disbuff_2[1]=Val%1000/100;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+		disbuff_2[2]=Val%100/10;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÊ®Î»
+		disbuff_2[3]=Val%10; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+		LCD1602_Dis_Str(0, 1, "Distance:0000 MM"); //ï¿½ï¿½Ê¾ï¿½ï¿½Distance:000.0cm
+	    LCD1602_Dis_OneChar(9, 1,  ASCII_2[disbuff_2[0]]); //ï¿½ï¿½Ê¾Ç§Î»
 	    LCD1602_Dis_OneChar(10, 1, ASCII_2[disbuff_2[1]]);	
 	    LCD1602_Dis_OneChar(11, 1, ASCII_2[disbuff_2[2]]);	
 	    LCD1602_Dis_OneChar(12, 1, ASCII_2[disbuff_2[3]]); 				
 	}		
 }
-//ÐÂ³¬Éù²¨Ä£¿éµÄ¾àÀëË¢ÐÂº¯Êý
+//ï¿½Â³ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½Ë¢ï¿½Âºï¿½ï¿½ï¿½
 unsigned int My_RefreshDistance() //
 {
 	uchar num;
@@ -219,19 +220,19 @@ unsigned int My_RefreshDistance() //
 	for(num=0; num<5; num++)
 	{
 		DistBuf_2[num] = My_GetDistance();
-		Delay1ms(60);//²â¾àÖÜÆÚ²»µÍÓÚ60ºÁÃë	
+		Delay1ms(60);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½	
 	}
 	bubble(DistBuf_2, 5);//
-	Dist = (DistBuf_2[1]+DistBuf_2[2]+DistBuf_2[3])/3; //È¥µô×î´óºÍ×îÐ¡È¡ÖÐ¼äÆ½¾ùÖµ
+	Dist = (DistBuf_2[1]+DistBuf_2[2]+DistBuf_2[3])/3; //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡È¡ï¿½Ð¼ï¿½Æ½ï¿½ï¿½Öµ
 	return(Dist);
 }
 
 
 void My_TEST(void)
 {
-		RearDistance = My_RefreshDistance();
+//		RearDistance = My_RefreshDistance();
 //		LCD1602_Dis_Str(0, 0, "Distance");
-		My_DispDistance(RearDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
+		My_DispDistance(100);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Delay1ms(50);
 }
 

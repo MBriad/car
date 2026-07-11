@@ -54,8 +54,10 @@ sbit ServoPin = P2^7;
 /*超声波接口*/
 sbit EchoPin = P2^0; //超声波模块Echo	接收端
 sbit TrigPin = P2^1; //超声波模块Trig	控制端
-sbit My_EPin = P2^4; //新超声波模块Echo	接收端
-sbit My_TPin = P2^5; //新超声波模块Trig	接收端
+
+sbit My_EPin = P2^4; //?????? Echo ???
+sbit My_TPin = P2^5; //?????? Trig ???
+
 /*4位独立按键引脚*/
 sbit KEY_S2 = P3^0;	//S2独立按键
 sbit KEY_S3 = P3^1;	//S3独立按键
@@ -73,8 +75,8 @@ sbit FollowSensorLeft 	=	P3^4;//左跟随传感器
 sbit FollowSensorRight	=	P3^5;//右跟随传感器
 sbit AvoidSensorLeft	=	P3^4;//左避障传感器	
 sbit AvoidSensorRight	=	P3^5;//右避障传感器
-//sbit TrackSensorLeft	=	P3^3;//左寻迹传感器
-//sbit TrackSensorRight	=	P3^2;//右寻迹传感器
+sbit TrackSensorLeft	=	P3^3;//左寻迹传感器
+sbit TrackSensorRight	=	P3^2;//右寻迹传感器
 sbit UAvoidSensorLeft	=	P1^0;//左避障传感器	
 sbit UAvoidSensorRight	=	P1^1;//右避障传感器
 sbit LightSensorFront   =	P0^0;//前寻光传感器

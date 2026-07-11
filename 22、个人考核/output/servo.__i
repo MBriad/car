@@ -1,1 +1,0 @@
-"..\source\servo.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\servo.lst) OBJECT(..\output\servo.obj)

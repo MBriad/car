@@ -31,7 +31,7 @@ static unsigned char lfsr;
 
 void InitRandom(void)
 {
-	lfsr = TH1 ^ TL1;
+	lfsr = TL0;
 	if (lfsr == 0)
 		lfsr = 0xAA;
 }
@@ -39,7 +39,7 @@ void InitRandom(void)
 unsigned char RandomByte(void)
 {
 	unsigned char fb;
-	fb = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 4)) & 1;
+	fb = ((lfsr >> 0) ^ (lfsr >> 1) ^ (lfsr >> 2) ^ (lfsr >> 3)) & 1;
 	lfsr = (lfsr >> 1) | (fb << 7);
 	return lfsr;
 }
@@ -179,20 +179,20 @@ void RamTarget(unsigned char dir)
 	case 0: /* Front */
 		break;
 	case 1: /* Left  +90 */
-		SmartCarLeftTurn(255, 255);
-		Delay1ms(200);
+		SmartCarLeftTurn(180, 180);
+		Delay1ms(180);
 		break;
 	case 2: /* Right -90 */
-		SmartCarRightTurn(255, 255);
-		Delay1ms(200);
+		SmartCarRightTurn(180, 180);
+		Delay1ms(180);
 		break;
 	case 3: /* Left45 +45 */
-		SmartCarLeftTurn(255, 255);
-		Delay1ms(180);
+		SmartCarLeftTurn(180, 180);
+		Delay1ms(90);
 		break;
 	case 4: /* Right45 -45 */
-		SmartCarRightTurn(255, 255);
-		Delay1ms(180);
+		SmartCarRightTurn(180, 180);
+		Delay1ms(90);
 		break;
 	}
 	SmartCarStops();

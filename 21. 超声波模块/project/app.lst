@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 1   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 11:53:24 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE APP
@@ -17,252 +17,258 @@ line level    source
    7          #include "Servo.h"
    8          #include "app.h"
    9          #include "main.h"
-  10          
-  11          bit Timer1Overflow;     //¼ÆÊýÆ÷1Òç³ö±êÖ¾Î»
-  12          bit Timer2Overflow; //¼ÆÊýÆ÷2Òç³ö±êÖ¾Î»
-  13          
+  10          #include <reg52.h>
+  11          
+  12          bit Timer1Overflow;     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+  13          bit Timer2Overflow; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
   14          
-  15          uchar code ASCII[13] = "0123456789";
-  16          uchar disbuff[4]={0,0,0,0};//ÓÃÓÚ·Ö±ð´æ·Å¾àÀëµÄÖµÃ×£¬ÀåÃ×£¬ºÁÃ×
-  17          
-  18          uint LeftDistance = 0, RightDistance = 0, FrontDistance = 0; //ÔÆÌ¨²â¾à¾àÀë»º´æ
-  19          uint My_Distance,RearDistance; //¶¨ÒåÐÂÔö³¬Éù²¨²â¾àµÄ¾àÀë
-  20          
-  21          uint DistBuf[5] = {0};//distance data buffer
-  22          
-  23          uchar code ASCII_2[13] = "0123456789";
-  24          uchar disbuff_2[4]={0,0,0,0};//ÓÃÓÚ·Ö±ð´æ·ÅÐÂÔö³¬Éù²¨¾àÀëµÄÖµÃ×£¬ÀåÃ×£¬ºÁÃ×
-  25          uint  DistBuf_2[5] = {0};//¶¨ÒåÐÂÔö³¬Éù²¨¾àÀëµÄ»º´æ
-  26          
-  27          /*====================================
-  28          º¯ÊýÃû  £ºDispDistance(unsigned long Val)
-  29          ²ÎÊý    £º¾àÀë
-  30          ·µ»ØÖµ  £ºÎÞ
-  31          ÃèÊö    £ºLCD1602ÏÔÊ¾¾àÀë
-  32          ÏÔÊ¾¾àÀëµ¥Î»£ººÁÃ×
-  33          ====================================*/
-  34          void DispDistance(unsigned int Val)
-  35          {
-  36   1              if((Val >= 5000) || (Timer1Overflow == 1))//³¬³ö²âÁ¿·¶Î§
-  37   1              {
-  38   2                      Timer1Overflow = 0; //Çå³ý¶¨Ê±Æ÷Òç³ö±êÖ¾Î»
-  39   2                      LCD1602_Dis_Str(0, 0, "!!! Out of range"); //LCD1602ÏÔÊ¾×Ö·û´®  
-  40   2              }
-  41   1              else
-  42   1              {
-  43   2                      /*ÏÔÊ¾¾àÀëµ¥Î»ºÁÃ×*/
-  44   2                      disbuff[0]=Val/1000; //¾àÀëÊýÖµÇ§Î»
-  45   2                      disbuff[1]=Val%1000/100;//¾àÀëÊýÖµ°ÙÎ»
-  46   2                      disbuff[2]=Val%100/10;//¾àÀëÊýÖµÊ®Î»
-  47   2                      disbuff[3]=Val%10; //¾àÀëÊýÖµ¸öÎ»
-  48   2                      LCD1602_Dis_Str(0, 0, "Distance:0000 MM"); //ÏÔÊ¾£ºDistance:000.0cm
-  49   2                  LCD1602_Dis_OneChar(9, 0,  ASCII[disbuff[0]]); //ÏÔÊ¾Ç§Î»
-  50   2                  LCD1602_Dis_OneChar(10, 0, ASCII[disbuff[1]]);      
-  51   2                  LCD1602_Dis_OneChar(11, 0, ASCII[disbuff[2]]);      
-  52   2                  LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]);                              
-  53   2              }               
-  54   1      }
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 2   
+  15          
+  16          uchar code ASCII[13] = "0123456789";
+  17          uchar disbuff[4]={0,0,0,0};//ï¿½ï¿½ï¿½Ú·Ö±ï¿½ï¿½Å¾ï¿½ï¿½ï¿½ï¿½Öµï¿½×£ï¿½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½ï¿½ï¿½
+  18          
+  19          uint LeftDistance = 0, RightDistance = 0, FrontDistance = 0; //ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ë»ºï¿½ï¿½
+  20          uint My_Distance,RearDistance; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
+  21          
+  22          uint DistBuf[5] = {0};//distance data buffer
+  23          
+  24          uchar code ASCII_2[13] = "0123456789";
+  25          uchar disbuff_2[4]={0,0,0,0};//ï¿½ï¿½ï¿½Ú·Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½×£ï
+             -¿½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½ï¿½ï¿½
+  26          uint  DistBuf_2[5] = {0};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½
+  27          
+  28          /*====================================
+  29          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½DispDistance(unsigned long Val)
+  30          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  31          ï¿½ï¿½ï¿½ï¿½Öµ  ï¿½ï¿½ï¿½ï¿½
+  32          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+  33          ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  34          ====================================*/
+  35          void DispDistance(unsigned int Val)
+  36          {
+  37   1              if((Val >= 5000) || (Timer1Overflow == 1))//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
+  38   1              {
+  39   2                      Timer1Overflow = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+  40   2                      LCD1602_Dis_Str(0, 0, "!!! Out of range"); //LCD1602ï¿½ï¿½Ê¾ï¿½Ö·ï¿½ï¿½ï¿½      
+  41   2              }
+  42   1              else
+  43   1              {
+  44   2                      /*ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½*/
+  45   2                      disbuff[0]=Val/1000; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÇ§Î»
+  46   2                      disbuff[1]=Val%1000/100;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+  47   2                      disbuff[2]=Val%100/10;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÊ®Î»
+  48   2                      disbuff[3]=Val%10; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+  49   2                      LCD1602_Dis_Str(0, 0, "Distance:0000 MM"); //ï¿½ï¿½Ê¾ï¿½ï¿½Distance:000.0cm
+  50   2                  LCD1602_Dis_OneChar(9, 0,  ASCII[disbuff[0]]); //ï¿½ï¿½Ê¾Ç§Î»
+  51   2                  LCD1602_Dis_OneChar(10, 0, ASCII[disbuff[1]]);      
+  52   2                  LCD1602_Dis_OneChar(11, 0, ASCII[disbuff[2]]);      
+  53   2                  LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]);                              
+C51 COMPILER V9.54   APP                                                                   07/11/2026 11:53:24 PAGE 2   
 
-  55          //Ã°ÅÝÅÅÐò
-  56          void bubble(unsigned int *a,unsigned char n) /*¶¨ÒåÁ½¸ö²ÎÊý£ºÊý×éÊ×µØÖ·ÓëÊý×é´óÐ¡*/
-  57          {
-  58   1              unsigned int i,j,temp;  
-  59   1              for(i = 0;i < n-1; i++) 
-  60   1              {       
-  61   2                      for(j = i + 1; j < n; j++) /*×¢ÒâÑ­»·µÄÉÏÏÂÏÞ*/
-  62   2                      {
-  63   3                              if(a[i] > a[j])
-  64   3                              {
-  65   4                                      temp = a[i];            
-  66   4                                      a[i] = a[j];            
-  67   4                                      a[j] = temp;                    
-  68   4                              }
-  69   3                      }
-  70   2              }
-  71   1      
-  72   1      }
-  73          /*====================================
-  74          º¯ÊýÃû  £ºRefreshDistance
-  75          ²ÎÊý    £ºÎÞ
-  76          ·µ»ØÖµ  £º¾­¹ýÃ°ÅÝÅÅÐòºóµÄ¾àÀë
-  77          ÃèÊö    £º¾­¹ý5´Î²â¾à£¬È¥³ý×î´óÖµºÍ×îÐ¡Öµ£¬È¡ÖÐ¼ä3´ÎÆ½¾ùÖµ
-  78          ¾àÀëµ¥Î»£ººÁÃ×
-  79          ====================================*/
-  80          unsigned int RefreshDistance()
-  81          {
-  82   1              uchar num;
-  83   1              uint Dist;
-  84   1              for(num=0; num<5; num++)
-  85   1              {
-  86   2                      DistBuf[num] = GetDistance();
-  87   2                      Delay1ms(60);//²â¾àÖÜÆÚ²»µÍÓÚ60ºÁÃë     
-  88   2              }
-  89   1              bubble(DistBuf, 5);//
-  90   1              Dist = (DistBuf[1]+DistBuf[2]+DistBuf[3])/3; //È¥µô×î´óºÍ×îÐ¡È¡ÖÐ¼äÆ½¾ùÖµ
-  91   1              return(Dist);
-  92   1      }
-  93          /*ºìÍâ±ÜÕÏ*/
-  94          void IR_Avoid()
-  95          {
-  96   1              if(UAvoidSensorLeft == 0)
-  97   1              {
-  98   2                      SmartCarRight(LeftSpeed, RightSpeed);//ÓÒ×ª     
-  99   2              }else if(UAvoidSensorRight == 0)
- 100   1              {
- 101   2                      SmartCarLeft(LeftSpeed, RightSpeed);//×ó×ª              
- 102   2              }else
- 103   1              {
- 104   2                      SmartCarForward(LeftSpeed, RightSpeed);//Ç°½ø   
- 105   2              }
- 106   1      }
- 107          /*====================================
- 108          º¯ÊýÃû  £ºPTZ_Avoid
- 109          ²ÎÊý    £ºvalÉèÖÃ±ÜÕÏ´¥·¢¾àÀë
- 110          ·µ»ØÖµ  £ºÎÞ
- 111          ÃèÊö    £ºÖÇÄÜÐ¡³µ¶æ»úÔÆÌ¨±ÜÕÏ
- 112          ¾àÀëµ¥Î»£ººÁÃ×
- 113          ====================================*/
- 114          void PTZ_Avoid(uint val)
- 115          {
- 116   1              uint Dis;//¾àÀëÔÝ´æ±äÁ¿
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 3   
+  54   2              }               
+  55   1      }
+  56          //Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  57          void bubble(unsigned int *a,unsigned char n) /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×µ
+             -ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡*/
+  58          {
+  59   1              unsigned int i,j,temp;  
+  60   1              for(i = 0;i < n-1; i++) 
+  61   1              {       
+  62   2                      for(j = i + 1; j < n; j++) /*×¢ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+  63   2                      {
+  64   3                              if(a[i] > a[j])
+  65   3                              {
+  66   4                                      temp = a[i];            
+  67   4                                      a[i] = a[j];            
+  68   4                                      a[j] = temp;                    
+  69   4                              }
+  70   3                      }
+  71   2              }
+  72   1      
+  73   1      }
+  74          /*====================================
+  75          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½RefreshDistance
+  76          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½
+  77          ï¿½ï¿½ï¿½ï¿½Öµ  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
+  78          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½5ï¿½Î²ï¿½à£¬È¥ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ð¡Öµï¿½ï¿½È¡ï¿½Ð¼ï¿½3ï¿½ï¿½Æ½ï¿½
+             -ï¿½Öµ
+  79          ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  80          ====================================*/
+  81          unsigned int RefreshDistance()
+  82          {
+  83   1              uchar num;
+  84   1              uint Dist;
+  85   1              for(num=0; num<5; num++)
+  86   1              {
+  87   2                      DistBuf[num] = GetDistance();
+  88   2                      Delay1ms(60);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½        
+  89   2              }
+  90   1              bubble(DistBuf, 5);//
+  91   1              Dist = (DistBuf[1]+DistBuf[2]+DistBuf[3])/3; //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡È¡ï¿½Ð¼ï¿½Æ½ï¿½ï¿½Öµ
+  92   1              return(Dist);
+  93   1      }
+  94          /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+  95          void IR_Avoid()
+  96          {
+  97   1              if(UAvoidSensorLeft == 0)
+  98   1              {
+  99   2                      SmartCarRight(LeftSpeed, RightSpeed);//ï¿½ï¿½×ª 
+ 100   2              }else if(UAvoidSensorRight == 0)
+ 101   1              {
+ 102   2                      SmartCarLeft(LeftSpeed, RightSpeed);//ï¿½ï¿½×ª          
+ 103   2              }else
+ 104   1              {
+ 105   2                      SmartCarForward(LeftSpeed, RightSpeed);//Ç°ï¿½ï¿½       
+ 106   2              }
+ 107   1      }
+ 108          /*====================================
+ 109          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½PTZ_Avoid
+ 110          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½valï¿½ï¿½ï¿½Ã±ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 111          ï¿½ï¿½ï¿½ï¿½Öµ  ï¿½ï¿½ï¿½ï¿½
+ 112          ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½
+ 113          ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+C51 COMPILER V9.54   APP                                                                   07/11/2026 11:53:24 PAGE 3   
 
- 117   1              Dis = GetDistance();//»ñÈ¡³¬Éù²¨²â¾à¾àÀë,µ¥Î»£ººÁÃ×
- 118   1              if(Dis < val)
- 119   1              {
- 120   2                      LCD1602_Dis_OneChar(0, 0, 'D');
- 121   2                      DispDistance(Dis);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë   
- 122   2                      SmartCarStops();        //Í£³µ
- 123   2                      Delay1ms(50);
- 124   2      
- 125   2                      /*¶æ»ú×ó×ª²â¾à*/
- 126   2                      ServoLeft();
- 127   2                      LeftDistance = RefreshDistance();
- 128   2                      LCD1602_Dis_OneChar(0, 0, 'L');
- 129   2                      DispDistance(LeftDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 130   2                      Delay1ms(50);
- 131   2      
- 132   2                      /*¶æ»úÓÒ×ª²â¾à*/
- 133   2                      ServoRight();
- 134   2                      RightDistance = RefreshDistance();
- 135   2                      LCD1602_Dis_OneChar(0, 0, 'R');
- 136   2                      DispDistance(RightDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 137   2                      Delay1ms(50);
- 138   2      
- 139   2                      /*¶æ»úÕýÇ°·½²â¾à*/
- 140   2                      ServoFront();
- 141   2                      FrontDistance = RefreshDistance();
- 142   2                      LCD1602_Dis_OneChar(0, 0, 'F');
- 143   2                      DispDistance(FrontDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 144   2                      Delay1ms(50);
- 145   2      
+ 114          ====================================*/
+ 115          void PTZ_Avoid(uint val)
+ 116          {
+ 117   1              uint Dis;//ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½
+ 118   1              Dis = GetDistance();//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 119   1              if(Dis < val)
+ 120   1              {
+ 121   2                      LCD1602_Dis_OneChar(0, 0, 'D');
+ 122   2                      DispDistance(Dis);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+ 123   2                      SmartCarStops();        //Í£ï¿½ï¿½
+ 124   2                      Delay1ms(50);
+ 125   2      
+ 126   2                      /*ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½*/
+ 127   2                      ServoLeft();
+ 128   2                      LeftDistance = RefreshDistance();
+ 129   2                      LCD1602_Dis_OneChar(0, 0, 'L');
+ 130   2                      DispDistance(LeftDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 131   2                      Delay1ms(50);
+ 132   2      
+ 133   2                      /*ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½*/
+ 134   2                      ServoRight();
+ 135   2                      RightDistance = RefreshDistance();
+ 136   2                      LCD1602_Dis_OneChar(0, 0, 'R');
+ 137   2                      DispDistance(RightDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 138   2                      Delay1ms(50);
+ 139   2      
+ 140   2                      /*ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½*/
+ 141   2                      ServoFront();
+ 142   2                      FrontDistance = RefreshDistance();
+ 143   2                      LCD1602_Dis_OneChar(0, 0, 'F');
+ 144   2                      DispDistance(FrontDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 145   2                      Delay1ms(50);
  146   2      
  147   2      
- 148   2                      if((FrontDistance<100) && (LeftDistance<100) && (RightDistance<100))
- 149   2                      {
- 150   3                              do{
- 151   4                                      SmartCarLeftTurn(255, 255);//Ô­µØ×ó×ª
- 152   4                                      Delay1ms(50);
- 153   4                                      /*¶æ»úÕýÇ°·½²â¾à*/
- 154   4                                      ServoFront();
- 155   4                                      Dis = RefreshDistance();
- 156   4                                      LCD1602_Dis_OneChar(0, 0, 'D');
- 157   4                                      DispDistance(Dis);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 158   4                                      Delay1ms(100);          
- 159   4                              }while(Dis < 200);
- 160   3                      }else if((FrontDistance>LeftDistance) && (FrontDistance>RightDistance))
- 161   2                      {
- 162   3                              LCD1602_Dis_OneChar(0, 0, 'F');
- 163   3                              DispDistance(FrontDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 164   3                              Delay1ms(100);
- 165   3                              SmartCarForward(LeftSpeed, RightSpeed);//Ç°½ø
- 166   3                      }else if(LeftDistance > RightDistance)
- 167   2                      {
- 168   3                              LCD1602_Dis_OneChar(0, 0, 'L');
- 169   3                              DispDistance(LeftDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 170   3                              Delay1ms(100);
- 171   3                              SmartCarLeftTurn(255, 255);//Ô­µØ×ó×ª
- 172   3                              Delay1ms(80);           
- 173   3                      }else if(RightDistance > LeftDistance)
- 174   2                      {
- 175   3                              LCD1602_Dis_OneChar(0, 0, 'R');
- 176   3                              DispDistance(RightDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 177   3                              Delay1ms(100);
- 178   3                              SmartCarRightTurn(255, 255);//Ô­µØÓÒ×ª
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 4   
+ 148   2      
+ 149   2                      if((FrontDistance<100) && (LeftDistance<100) && (RightDistance<100))
+ 150   2                      {
+ 151   3                              do{
+ 152   4                                      SmartCarLeftTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
+ 153   4                                      Delay1ms(50);
+ 154   4                                      /*ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½*/
+ 155   4                                      ServoFront();
+ 156   4                                      Dis = RefreshDistance();
+ 157   4                                      LCD1602_Dis_OneChar(0, 0, 'D');
+ 158   4                                      DispDistance(Dis);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 159   4                                      Delay1ms(100);          
+ 160   4                              }while(Dis < 200);
+ 161   3                      }else if((FrontDistance>LeftDistance) && (FrontDistance>RightDistance))
+ 162   2                      {
+ 163   3                              LCD1602_Dis_OneChar(0, 0, 'F');
+ 164   3                              DispDistance(FrontDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 165   3                              Delay1ms(100);
+ 166   3                              SmartCarForward(LeftSpeed, RightSpeed);//Ç°ï¿½ï¿½
+ 167   3                      }else if(LeftDistance > RightDistance)
+ 168   2                      {
+ 169   3                              LCD1602_Dis_OneChar(0, 0, 'L');
+ 170   3                              DispDistance(LeftDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 171   3                              Delay1ms(100);
+ 172   3                              SmartCarLeftTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
+ 173   3                              Delay1ms(80);           
+ 174   3                      }else if(RightDistance > LeftDistance)
+ 175   2                      {
+C51 COMPILER V9.54   APP                                                                   07/11/2026 11:53:24 PAGE 4   
 
- 179   3                              Delay1ms(80);   
- 180   3                      }               
- 181   2              }
- 182   1              else
- 183   1              {
- 184   2                      for(Dis=0; Dis<1800; Dis++)//²â¾àÖÜÆÚ²»µÍÓÚ60ms ÕâÀï½èÓÃDis±äÁ¿×öÑ­»·
- 185   2                      {
- 186   3                              IR_Avoid();//ºìÍâ±ÜÕÏ
- 187   3                      }
- 188   2              }                       
- 189   1      }
- 190          
- 191          /**************************************/
- 192           //ÐÂ³¬Éù²¨Ä£¿éµÄ¾àÀëÏÔÊ¾º¯Êý£¬ÏÔÊ¾ÔÚLCDµÄµÚ¶þÐÐ£¬µÚÒ»ÐÐÏÔÊ¾ÁËÔ­À´³¬Éù²¨µÄ¾àÀë
- 193          void My_DispDistance(unsigned int Val)  
- 194          {
- 195   1              if((Val >= 2500) || (Timer2Overflow == 1))//³¬³ö²âÁ¿·¶Î§
- 196   1              {
- 197   2                      Timer2Overflow = 0; //Çå³ý¶¨Ê±Æ÷Òç³ö±êÖ¾Î»
- 198   2                      LCD1602_Dis_Str(0, 1, "!!! Out of range"); //LCD1602ÏÔÊ¾×Ö·û´®  
- 199   2              }
- 200   1              else
- 201   1              {
- 202   2                      /*ÏÔÊ¾¾àÀëµ¥Î»ºÁÃ×*/
- 203   2                      disbuff_2[0]=Val/1000; //¾àÀëÊýÖµÇ§Î»
- 204   2                      disbuff_2[1]=Val%1000/100;//¾àÀëÊýÖµ°ÙÎ»
- 205   2                      disbuff_2[2]=Val%100/10;//¾àÀëÊýÖµÊ®Î»
- 206   2                      disbuff_2[3]=Val%10; //¾àÀëÊýÖµ¸öÎ»
- 207   2                      LCD1602_Dis_Str(0, 1, "Distance:0000 MM"); //ÏÔÊ¾£ºDistance:000.0cm
- 208   2                  LCD1602_Dis_OneChar(9, 1,  ASCII_2[disbuff_2[0]]); //ÏÔÊ¾Ç§Î»
- 209   2                  LCD1602_Dis_OneChar(10, 1, ASCII_2[disbuff_2[1]]);  
- 210   2                  LCD1602_Dis_OneChar(11, 1, ASCII_2[disbuff_2[2]]);  
- 211   2                  LCD1602_Dis_OneChar(12, 1, ASCII_2[disbuff_2[3]]);                          
- 212   2              }               
- 213   1      }
- 214          //ÐÂ³¬Éù²¨Ä£¿éµÄ¾àÀëË¢ÐÂº¯Êý
- 215          unsigned int My_RefreshDistance() //
- 216          {
- 217   1              uchar num;
- 218   1              uint Dist;
- 219   1              for(num=0; num<5; num++)
- 220   1              {
- 221   2                      DistBuf_2[num] = My_GetDistance();
- 222   2                      Delay1ms(60);//²â¾àÖÜÆÚ²»µÍÓÚ60ºÁÃë     
- 223   2              }
- 224   1              bubble(DistBuf_2, 5);//
- 225   1              Dist = (DistBuf_2[1]+DistBuf_2[2]+DistBuf_2[3])/3; //È¥µô×î´óºÍ×îÐ¡È¡ÖÐ¼äÆ½¾ùÖµ
- 226   1              return(Dist);
- 227   1      }
- 228          
+ 176   3                              LCD1602_Dis_OneChar(0, 0, 'R');
+ 177   3                              DispDistance(RightDistance);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 178   3                              Delay1ms(100);
+ 179   3                              SmartCarRightTurn(255, 255);//Ô­ï¿½ï¿½ï¿½ï¿½×ª
+ 180   3                              Delay1ms(80);   
+ 181   3                      }               
+ 182   2              }
+ 183   1              else
+ 184   1              {
+ 185   2                      for(Dis=0; Dis<1800; Dis++)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ms ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Disï¿½ï¿½ï¿½ï¿
+             -½ï¿½ï¿½Ñ­ï¿½ï¿½
+ 186   2                      {
+ 187   3                              IR_Avoid();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 188   3                      }
+ 189   2              }                       
+ 190   1      }
+ 191          
+ 192          /**************************************/
+ 193           //ï¿½Â³ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½LCDï¿½ÄµÚ¶ï¿½ï¿½Ð£ï¿½ï¿½
+             -ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
+ 194          void My_DispDistance(unsigned int Val)  
+ 195          {
+ 196   1              if((Val >= 2500) || (Timer2Overflow == 1))//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
+ 197   1              {
+ 198   2                      Timer2Overflow = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+ 199   2                      LCD1602_Dis_Str(0, 1, "!!! Out of range"); //LCD1602ï¿½ï¿½Ê¾ï¿½Ö·ï¿½ï¿½ï¿½      
+ 200   2              }
+ 201   1              else
+ 202   1              {
+ 203   2                      /*ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ëµ¥Î»ï¿½ï¿½ï¿½ï¿½*/
+ 204   2                      disbuff_2[0]=Val/1000; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÇ§Î»
+ 205   2                      disbuff_2[1]=Val%1000/100;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+ 206   2                      disbuff_2[2]=Val%100/10;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÊ®Î»
+ 207   2                      disbuff_2[3]=Val%10; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Î»
+ 208   2                      LCD1602_Dis_Str(0, 1, "Distance:0000 MM"); //ï¿½ï¿½Ê¾ï¿½ï¿½Distance:000.0cm
+ 209   2                  LCD1602_Dis_OneChar(9, 1,  ASCII_2[disbuff_2[0]]); //ï¿½ï¿½Ê¾Ç§Î»
+ 210   2                  LCD1602_Dis_OneChar(10, 1, ASCII_2[disbuff_2[1]]);  
+ 211   2                  LCD1602_Dis_OneChar(11, 1, ASCII_2[disbuff_2[2]]);  
+ 212   2                  LCD1602_Dis_OneChar(12, 1, ASCII_2[disbuff_2[3]]);                          
+ 213   2              }               
+ 214   1      }
+ 215          //ï¿½Â³ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½Ë¢ï¿½Âºï¿½ï¿½ï¿½
+ 216          unsigned int My_RefreshDistance() //
+ 217          {
+ 218   1              uchar num;
+ 219   1              uint Dist;
+ 220   1              for(num=0; num<5; num++)
+ 221   1              {
+ 222   2                      DistBuf_2[num] = My_GetDistance();
+ 223   2                      Delay1ms(60);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½60ï¿½ï¿½ï¿½ï¿½        
+ 224   2              }
+ 225   1              bubble(DistBuf_2, 5);//
+ 226   1              Dist = (DistBuf_2[1]+DistBuf_2[2]+DistBuf_2[3])/3; //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡È¡ï¿½Ð¼ï¿½Æ½ï¿½ï¿½Öµ
+ 227   1              return(Dist);
+ 228   1      }
  229          
- 230          void My_TEST(void)
- 231          {
- 232   1                      RearDistance = My_RefreshDistance();
- 233   1      //              LCD1602_Dis_Str(0, 0, "Distance");
- 234   1                      My_DispDistance(RearDistance);//LCD1602ÏÔÊ¾³¬Éù²¨²â¾à¾àÀë
- 235   1                      Delay1ms(50);
- 236   1      }
- 237          
- 238          void My_TEST_2(void)
- 239          {
- 240   1                      My_Distance = RefreshDistance();
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 5   
+ 230          
+ 231          void My_TEST(void)
+ 232          {
+ 233   1      //              RearDistance = My_RefreshDistance();
+ 234   1      //              LCD1602_Dis_Str(0, 0, "Distance");
+ 235   1                      My_DispDistance(100);//LCD1602ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+C51 COMPILER V9.54   APP                                                                   07/11/2026 11:53:24 PAGE 5   
 
- 241   1                      DispDistance(My_Distance);
- 242   1                      Delay1ms(50);
- 243   1      }
+ 236   1                      Delay1ms(50);
+ 237   1      }
+ 238          
+ 239          void My_TEST_2(void)
+ 240          {
+ 241   1                      My_Distance = RefreshDistance();
+ 242   1                      DispDistance(My_Distance);
+ 243   1                      Delay1ms(50);
+ 244   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1139    ----
+   CODE SIZE        =   1136    ----
    CONSTANT SIZE    =     60    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

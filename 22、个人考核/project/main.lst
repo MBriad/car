@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  07/11/2026 10:30:58 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 13:28:32 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52   1              ServoFront();                                // Servo to front
   53   1              LCD1602_Dis_Str(0, 0, "Please press the");   // Prompt message
   54   1              LCD1602_Dis_Str(0, 1, "S2 to start");        // Prompt message
-C51 COMPILER V9.54   MAIN                                                                  07/11/2026 10:30:58 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 13:28:32 PAGE 2   
 
   55   1              keyscan();                                   // Wait for S2 press
   56   1              LCD1602_Clear_Screen();                      // Clear LCD

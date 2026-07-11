@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:30:59 PAGE 1   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 13:50:29 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE APP
@@ -41,7 +41,7 @@ line level    source
   31          
   32          void InitRandom(void)
   33          {
-  34   1              lfsr = TH1 ^ TL1;
+  34   1              lfsr = TL0;
   35   1              if (lfsr == 0)
   36   1                      lfsr = 0xAA;
   37   1      }
@@ -49,7 +49,7 @@ line level    source
   39          unsigned char RandomByte(void)
   40          {
   41   1              unsigned char fb;
-  42   1              fb = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 4)) & 1;
+  42   1              fb = ((lfsr >> 0) ^ (lfsr >> 1) ^ (lfsr >> 2) ^ (lfsr >> 3)) & 1;
   43   1              lfsr = (lfsr >> 1) | (fb << 7);
   44   1              return lfsr;
   45   1      }
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1              if ((Val >= 5000) || (Timer1Overflow == 1))
   54   1              {
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:30:59 PAGE 2   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 13:50:29 PAGE 2   
 
   55   2                      Timer1Overflow = 0;
   56   2                      LCD1602_Dis_Str(0, 0, "!!! Out of range");
@@ -126,7 +126,7 @@ line level    source
  114          {
  115   1              *d1 = RandomByte() % 5;
  116   1              do
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:30:59 PAGE 3   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 13:50:29 PAGE 3   
 
  117   1              {
  118   2                      *d2 = RandomByte() % 5;
@@ -190,25 +190,25 @@ line level    source
  176   1              /* Turn car body to face target direction */
  177   1              switch (dir)
  178   1              {
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:30:59 PAGE 4   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 13:50:29 PAGE 4   
 
  179   2              case 0: /* Front */
  180   2                      break;
  181   2              case 1: /* Left  +90 */
- 182   2                      SmartCarLeftTurn(255, 255);
- 183   2                      Delay1ms(200);
+ 182   2                      SmartCarLeftTurn(180, 180);
+ 183   2                      Delay1ms(180);
  184   2                      break;
  185   2              case 2: /* Right -90 */
- 186   2                      SmartCarRightTurn(255, 255);
- 187   2                      Delay1ms(200);
+ 186   2                      SmartCarRightTurn(180, 180);
+ 187   2                      Delay1ms(180);
  188   2                      break;
  189   2              case 3: /* Left45 +45 */
- 190   2                      SmartCarLeftTurn(255, 255);
- 191   2                      Delay1ms(180);
+ 190   2                      SmartCarLeftTurn(180, 180);
+ 191   2                      Delay1ms(90);
  192   2                      break;
  193   2              case 4: /* Right45 -45 */
- 194   2                      SmartCarRightTurn(255, 255);
- 195   2                      Delay1ms(180);
+ 194   2                      SmartCarRightTurn(180, 180);
+ 195   2                      Delay1ms(90);
  196   2                      break;
  197   2              }
  198   1              SmartCarStops();
@@ -247,14 +247,14 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    856    ----
+   CODE SIZE        =    850    ----
    CONSTANT SIZE    =    159    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     25      26
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      2    ----
-C51 COMPILER V9.54   APP                                                                   07/11/2026 10:30:59 PAGE 5   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 13:50:29 PAGE 5   
 
 END OF MODULE INFORMATION.
 
