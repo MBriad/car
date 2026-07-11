@@ -1,10 +1,10 @@
-C51 COMPILER V9.00   LCD1602                                                               07/07/2024 12:45:00 PAGE 1   
+C51 COMPILER V9.54   LCD1602                                                               07/11/2026 10:33:38 PAGE 1   
 
 
-C51 COMPILER V9.00, COMPILATION OF MODULE LCD1602
+C51 COMPILER V9.54, COMPILATION OF MODULE LCD1602
 OBJECT MODULE PLACED IN ..\output\LCD1602.obj
-COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\LCD1602.c BROWSE DEBUG OBJECTEXTEND PRINT(.\LCD1602.lst) OBJECT(.
-                    -.\output\LCD1602.obj)
+COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\LCD1602.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTE
+                    -XTEND PRINT(.\LCD1602.lst) OBJECT(..\output\LCD1602.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52          *函数名称：LCD1602_Clear_Screen
   53          *函数功能：清屏
   54          =================================================*/
-C51 COMPILER V9.00   LCD1602                                                               07/07/2024 12:45:00 PAGE 2   
+C51 COMPILER V9.54   LCD1602                                                               07/11/2026 10:33:38 PAGE 2   
 
   55          void LCD1602_Clear_Screen()
   56          {
@@ -126,7 +126,7 @@ line level    source
  114          /*=================================================
  115          *函数名称：Init_LCD1602
  116          *函数功能：1602初始化
-C51 COMPILER V9.00   LCD1602                                                               07/07/2024 12:45:00 PAGE 3   
+C51 COMPILER V9.54   LCD1602                                                               07/11/2026 10:33:38 PAGE 3   
 
  117          *调用： LCD1602_Write_Cmd();
  118          =================================================*/

@@ -1,10 +1,10 @@
-C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 1   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 1   
 
 
-C51 COMPILER V9.00, COMPILATION OF MODULE APP
+C51 COMPILER V9.54, COMPILATION OF MODULE APP
 OBJECT MODULE PLACED IN ..\output\app.obj
-COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\app.c BROWSE DEBUG OBJECTEXTEND PRINT(.\app.lst) OBJECT(..\output
-                    -\app.obj)
+COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\app.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
+                    -D PRINT(.\app.lst) OBJECT(..\output\app.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   2                  LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]);                              
   53   2              }               
   54   1      }
-C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 2   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 2   
 
   55          //冒泡排序
   56          void bubble(unsigned int *a,unsigned char n) /*定义两个参数：数组首地址与数组大小*/
@@ -126,7 +126,7 @@ line level    source
  114          void PTZ_Avoid(uint val)
  115          {
  116   1              uint Dis;//距离暂存变量
-C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 3   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 3   
 
  117   1              Dis = GetDistance();//获取超声波测距距离,单位：毫米
  118   1              if(Dis < val)
@@ -190,7 +190,7 @@ line level    source
  176   3                              DispDistance(RightDistance);//LCD1602显示超声波测距距离
  177   3                              Delay1ms(100);
  178   3                              SmartCarRightTurn(255, 255);//原地右转
-C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 4   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 4   
 
  179   3                              Delay1ms(80);   
  180   3                      }               
@@ -254,7 +254,7 @@ line level    source
  238          void My_TEST_2(void)
  239          {
  240   1                      My_Distance = RefreshDistance();
-C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 5   
+C51 COMPILER V9.54   APP                                                                   07/11/2026 10:33:37 PAGE 5   
 
  241   1                      DispDistance(My_Distance);
  242   1                      Delay1ms(50);

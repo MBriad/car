@@ -1,27 +1,14 @@
 /*
-* ����дʱ�䡿�� 2019��8��6��
-* ����    �ߡ��� �������:01
-* ����    ������ 1.7 �Ż���������̨�����߼�
-* ����    վ���� http://www.qxmcu.com/ 
-* ���Ա����̡��� http://qxmcu.taobao.com/ 
-* ��ʵ��ƽ̨���� QX-MCS51 ��Ƭ�������� & QX-A51����С��
-* ���ⲿ���񡿣� 11.0592mhz	
-* ������оƬ���� STC89C52
-* �����뻷������ Keil ��Visio4
-* �������ܡ��� ��̨���ϣ���������̨�������ϣ�1602Һ����ʾ����
-* ��ʹ��˵������ 1���������1602Һ����ʾ��
-				 2���뽫�������ذ��С���װ��ϵ�P32-P35��4P�Ű��߰ε�
-				 3����װ�������Ű��ߣ��ֱ��С��������P34�ӵ����ذ��P10�ϣ�P35�ӵ����ذ��P11��
+ * Module 22: Personal Assessment
+ * MCU: STC89C52, 11.0592MHz
+ * Platform: QX-MCS51 + QX-A51 Smart Car
+ * Compiler: Keil C51
+ * Description: Randomly pick 2 of 5 directions, servo to each,
+ *              measure distance, buzzer alert, ram nearest target.
+ * Entry point: AssessmentRun() in app.c
+ */
 
-				 Һ����һ����ʾ��̨��෽�򣬷ֱ�ΪD��Fǰ����L����,R����
-				 �ڶ�������ʾ�ľ��룬��λ����
-				 ����ͨ�������ʾ��Ϣ����������С�������߼��������ϲ�ͬʵ�黷��
-				 �¶���Ҫ���Բ��ܴﵽ����Ч����
-				 ִ���߼�app.c�ļ�����PTZ_Avoid����
-* ��ע������� ��̨����ײ
-*/
-
-#define  _MAIN_C
+#define _MAIN_C
 #include "config.h"
 #include "motor.h"
 #include "Delay.h"
@@ -32,42 +19,46 @@
 #include "Servo.h"
 #include "main.h"
 
-uchar LeftSpeed, RightSpeed;//�����������ٶ�
+uchar LeftSpeed, RightSpeed;
+
 void keyscan()
 {
-	for(;;)	//��ѭ��
+	for (;;)
 	{
-		if(KEY_S2 == 0)// ʵʱ���S2�����Ƿ񱻰���
+		if (KEY_S2 == 0)
 		{
-			Delay1ms(5); //��������
-			if(KEY_S2 == 0)//�ټ��S2�Ƿ񱻰���
+			Delay1ms(5);
+			if (KEY_S2 == 0)
 			{
-				while(!KEY_S2);//���ּ��
-				BUZZER_on;	//����������
-				Delay1ms(200);//200������ʱ
-				BUZZER_off;	//�رշ�����
-				break;		//�˳�FOR��ѭ��
+				while (!KEY_S2)
+					;
+				BUZZER_on;
+				Delay1ms(200);
+				BUZZER_off;
+				break;
 			}
 		}
-	}	
+	}
 }
+
 void main()
 {
-//	LeftSpeed	= 150;//���������ٶ�
-//	RightSpeed	= 150;//���������ٶ�
-	IntRegInit();//中断寄存器初始化
-	Timer0Init();//PWM调速初始化
-	Timer1Init();//初始化定时器
-	Init_LCD1602(); //LCD1602��ʼ��
-	ServoFront(); //��ʼ���������
-	LCD1602_Dis_Str(0, 0, "Please press the"); //LCD1602д�ַ���
-	LCD1602_Dis_Str(0, 1, "S2 to start"); //LCD1602д�ַ����밴��S2����С��
-	keyscan();//��S2��������
-	LCD1602_Clear_Screen();//LCD1602����	
-	while(1)
+//	LeftSpeed  = 150;
+//	RightSpeed = 150;
+	IntRegInit();                                // Init interrupt registers
+	Timer0Init();                                // Init PWM speed control
+	Timer1Init();                                // Init Timer1
+	Init_LCD1602();                              // Init LCD1602
+	ServoFront();                                // Servo to front
+	LCD1602_Dis_Str(0, 0, "Please press the");   // Prompt message
+	LCD1602_Dis_Str(0, 1, "S2 to start");        // Prompt message
+	keyscan();                                   // Wait for S2 press
+	LCD1602_Clear_Screen();                      // Clear LCD
+	while (1)
 	{
 		AssessmentRun();
 		SmartCarStops();
-		while(1);
+		while (1)
+			;
 	}
 }

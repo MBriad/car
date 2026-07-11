@@ -21,8 +21,7 @@ uchar code *dirNames[5] = {
 	"Dir: Left   ",
 	"Dir: Right  ",
 	"Dir: Left45 ",
-	"Dir: Right45"
-};
+	"Dir: Right45"};
 
 /*====================================
   LFSR pseudo-random number generator
@@ -114,7 +113,8 @@ unsigned int RefreshDistance()
 void PickTwoDirections(unsigned char *d1, unsigned char *d2)
 {
 	*d1 = RandomByte() % 5;
-	do {
+	do
+	{
 		*d2 = RandomByte() % 5;
 	} while (*d2 == *d1);
 }
@@ -128,11 +128,21 @@ void SetServo(unsigned char dir)
 {
 	switch (dir)
 	{
-	case 0: ServoFront();   break;
-	case 1: ServoLeft();    break;
-	case 2: ServoRight();   break;
-	case 3: ServoLeft45();  break;
-	case 4: ServoRight45(); break;
+	case 0:
+		ServoFront();
+		break;
+	case 1:
+		ServoLeft();
+		break;
+	case 2:
+		ServoRight();
+		break;
+	case 3:
+		ServoLeft45();
+		break;
+	case 4:
+		ServoRight45();
+		break;
 	}
 }
 
@@ -151,7 +161,7 @@ unsigned int MeasureDirection(unsigned char dir)
 }
 
 /*====================================
-  Buzzer alert, then ram target
+  Buzzer alert, turn car, then ram
 ====================================*/
 void RamTarget(unsigned char dir)
 {
@@ -162,6 +172,32 @@ void RamTarget(unsigned char dir)
 	BUZZER_off;
 	SetServo(dir);
 	Delay1ms(300);
+
+	/* Turn car body to face target direction */
+	switch (dir)
+	{
+	case 0: /* Front */
+		break;
+	case 1: /* Left  +90 */
+		SmartCarLeftTurn(255, 255);
+		Delay1ms(200);
+		break;
+	case 2: /* Right -90 */
+		SmartCarRightTurn(255, 255);
+		Delay1ms(200);
+		break;
+	case 3: /* Left45 +45 */
+		SmartCarLeftTurn(255, 255);
+		Delay1ms(180);
+		break;
+	case 4: /* Right45 -45 */
+		SmartCarRightTurn(255, 255);
+		Delay1ms(180);
+		break;
+	}
+	SmartCarStops();
+	Delay1ms(200);
+
 	LCD1602_Dis_Str(0, 1, "RAMMING!!!     ");
 	SmartCarForward(255, 255);
 	Delay1ms(3000);

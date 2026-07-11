@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  07/11/2026 09:55:06 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 10:30:58 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -9,84 +9,71 @@ COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\main.c O
 line level    source
 
    1          /*
-   2          * ����дʱ�䡿�� 2019��8��6��
-   3          * ����    �ߡ��� �������:01
-   4          * ����    ������ 1.7 �Ż���������̨�����߼�
-   5          * ����    վ���� http://www.qxmcu.com/ 
-   6          * ���Ա����̡��� http://qxmcu.taobao.com/ 
-   7          * ��ʵ��ƽ̨���� QX-MCS51 ��Ƭ�������� & QX-A51����С��
-   8          * ���ⲿ���񡿣� 11.0592mhz       
-   9          * ������оƬ���� STC89C52
-  10          * �����뻷������ Keil ��Visio4
-  11          * �������ܡ��� ��̨���ϣ���������̨�������ϣ
-             -�1602Һ����ʾ����
-  12          * ��ʹ��˵������ 1���������1602Һ����ʾ��
-  13                                           2���뽫�������ذ��С���װ��ϵ�P32-P35��4P�Ű��߰ε�
-  14                                           3����װ�������Ű��ߣ��ֱ��С��������P34�ӵ���
-             -���ذ��P10�ϣ�P35�ӵ����ذ��P11��
-  15          
-  16                                           Һ����һ����ʾ��̨��෽�򣬷ֱ�ΪD��Fǰ����L����,R�
-             -���
-  17                                           �ڶ�������ʾ�ľ��룬��λ����
-  18                                           ����ͨ�������ʾ��Ϣ����������С�������߼�
-             -���������ϲ�ͬʵ�黷��
-  19                                           �¶���Ҫ���Բ��ܴﵽ����Ч����
-  20                                           ִ���߼�app.c�ļ�����PTZ_Avoid����
-  21          * ��ע������� ��̨����ײ
-  22          */
+   2           * Module 22: Personal Assessment
+   3           * MCU: STC89C52, 11.0592MHz
+   4           * Platform: QX-MCS51 + QX-A51 Smart Car
+   5           * Compiler: Keil C51
+   6           * Description: Randomly pick 2 of 5 directions, servo to each,
+   7           *              measure distance, buzzer alert, ram nearest target.
+   8           * Entry point: AssessmentRun() in app.c
+   9           */
+  10          
+  11          #define _MAIN_C
+  12          #include "config.h"
+  13          #include "motor.h"
+  14          #include "Delay.h"
+  15          #include "timer_ISR.h"
+  16          #include "LCD1602.h"
+  17          #include "ultrasonic.h"
+  18          #include "app.h"
+  19          #include "Servo.h"
+  20          #include "main.h"
+  21          
+  22          uchar LeftSpeed, RightSpeed;
   23          
-  24          #define  _MAIN_C
-  25          #include "config.h"
-  26          #include "motor.h"
-  27          #include "Delay.h"
-  28          #include "timer_ISR.h"
-  29          #include "LCD1602.h"
-  30          #include "ultrasonic.h"
-  31          #include "app.h"
-  32          #include "Servo.h"
-  33          #include "main.h"
-  34          
-  35          uchar LeftSpeed, RightSpeed;//�����������ٶ�
-  36          void keyscan()
-  37          {
-  38   1              for(;;) //��ѭ��
-  39   1              {
-  40   2                      if(KEY_S2 == 0)// ʵʱ���S2�����Ƿ񱻰���
-  41   2                      {
-  42   3                              Delay1ms(5); //��������
-  43   3                              if(KEY_S2 == 0)//�ټ��S2�Ƿ񱻰���
-  44   3                              {
-  45   4                                      while(!KEY_S2);//���ּ��
-  46   4                                      BUZZER_on;      //����������
-  47   4                                      Delay1ms(200);//200������ʱ
-  48   4                                      BUZZER_off;     //�رշ�����
-  49   4                                      break;          //�˳�FOR��ѭ��
-  50   4                              }
-C51 COMPILER V9.54   MAIN                                                                  07/11/2026 09:55:06 PAGE 2   
+  24          void keyscan()
+  25          {
+  26   1              for (;;)
+  27   1              {
+  28   2                      if (KEY_S2 == 0)
+  29   2                      {
+  30   3                              Delay1ms(5);
+  31   3                              if (KEY_S2 == 0)
+  32   3                              {
+  33   4                                      while (!KEY_S2)
+  34   4                                              ;
+  35   4                                      BUZZER_on;
+  36   4                                      Delay1ms(200);
+  37   4                                      BUZZER_off;
+  38   4                                      break;
+  39   4                              }
+  40   3                      }
+  41   2              }
+  42   1      }
+  43          
+  44          void main()
+  45          {
+  46   1      //      LeftSpeed  = 150;
+  47   1      //      RightSpeed = 150;
+  48   1              IntRegInit();                                // Init interrupt registers
+  49   1              Timer0Init();                                // Init PWM speed control
+  50   1              Timer1Init();                                // Init Timer1
+  51   1              Init_LCD1602();                              // Init LCD1602
+  52   1              ServoFront();                                // Servo to front
+  53   1              LCD1602_Dis_Str(0, 0, "Please press the");   // Prompt message
+  54   1              LCD1602_Dis_Str(0, 1, "S2 to start");        // Prompt message
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 10:30:58 PAGE 2   
 
-  51   3                      }
-  52   2              }       
-  53   1      }
-  54          void main()
-  55          {
-  56   1      //      LeftSpeed       = 150;//���������ٶ�
-  57   1      //      RightSpeed      = 150;//���������ٶ�
-  58   1              IntRegInit();//中断寄存器初始化
-  59   1              Timer0Init();//PWM调速初始化
-  60   1              Timer1Init();//初始化定时器
-  61   1              Init_LCD1602(); //LCD1602��ʼ��
-  62   1              ServoFront(); //��ʼ���������
-  63   1              LCD1602_Dis_Str(0, 0, "Please press the"); //LCD1602д�ַ���
-  64   1              LCD1602_Dis_Str(0, 1, "S2 to start"); //LCD1602д�ַ����밴��S2����С��
-  65   1              keyscan();//��S2��������
-  66   1              LCD1602_Clear_Screen();//LCD1602����    
-  67   1              while(1)
-  68   1              {
-  69   2                      AssessmentRun();
-  70   2                      SmartCarStops();
-  71   2                      while(1);
-  72   2              }
-  73   1      }
+  55   1              keyscan();                                   // Wait for S2 press
+  56   1              LCD1602_Clear_Screen();                      // Clear LCD
+  57   1              while (1)
+  58   1              {
+  59   2                      AssessmentRun();
+  60   2                      SmartCarStops();
+  61   2                      while (1)
+  62   2                              ;
+  63   2              }
+  64   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

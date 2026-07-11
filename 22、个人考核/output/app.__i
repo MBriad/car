@@ -1,0 +1,1 @@
+"..\source\app.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\app.lst) OBJECT(..\output\app.obj)
