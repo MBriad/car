@@ -1,0 +1,194 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        07/24/2019  17:14:19  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE ..\output\main.obj, ..\output\motor.obj, ..\output\timer_ISR.obj TO ..\output\template PRINT (.
+>> \template.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  ..\output\main.obj (MAIN)
+  ..\output\motor.obj (MOTOR)
+  ..\output\timer_ISR.obj (TIMER_ISR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  ..\output\template (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?MOTOR
+            DATA    000AH     0001H     UNIT         ?DT?TIMER_ISR
+            IDATA   000BH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0005H     UNIT         ?PR?INTREGINIT?TIMER_ISR
+                    0008H     0003H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0037H     UNIT         ?PR?TM0_ISR?TIMER_ISR
+            CODE    0045H     000FH     UNIT         ?PR?MAIN?MAIN
+            CODE    0054H     000DH     UNIT         ?PR?_SMARTCARFORWARD?MOTOR
+            CODE    0061H     000CH     UNIT         ?PR?TIMER0INIT?TIMER_ISR
+            CODE    006DH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   ..\output\template (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN
+  +--> ?PR?INTREGINIT?TIMER_ISR
+  +--> ?PR?TIMER0INIT?TIMER_ISR
+  +--> ?PR?_SMARTCARFORWARD?MOTOR
+
+
+
+SYMBOL TABLE OF MODULE:  ..\output\template (MAIN)
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/24/2019  17:14:19  PAGE 2
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:0045H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:0045H         LINE#         7
+  C:0045H         LINE#         8
+  C:0045H         LINE#         9
+  C:0048H         LINE#         10
+  C:004BH         LINE#         11
+  C:0052H         LINE#         12
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        MOTOR
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:0008H         PUBLIC        RightMotorSpeed
+  D:00A8H         PUBLIC        IE
+  D:0009H         PUBLIC        LeftMotorSpeed
+  D:00B8H         PUBLIC        IP
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:0090H.2       PUBLIC        IN1
+  B:0090H.3       PUBLIC        IN2
+  B:0090H.6       PUBLIC        IN3
+  B:0090H.7       PUBLIC        IN4
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  C:0054H         PUBLIC        _SmartCarForward
+  -------         PROC          _SMARTCARFORWARD
+  D:0007H         SYMBOL        LeftSpeedVal
+  D:0005H         SYMBOL        RightSpeedVal
+  C:0054H         LINE#         14
+  C:0054H         LINE#         15
+  C:0054H         LINE#         16
+  C:0056H         LINE#         17
+  C:0058H         LINE#         18
+  C:005CH         LINE#         19
+  C:0060H         LINE#         20
+  -------         ENDPROC       _SMARTCARFORWARD
+  -------         ENDMOD        MOTOR
+
+  -------         MODULE        TIMER_ISR
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/24/2019  17:14:19  PAGE 3
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  B:0090H.5       PUBLIC        RightMotor_EN
+  D:00A8H         PUBLIC        IE
+  B:0090H.4       PUBLIC        LeftMotor_EN
+  D:00B8H         PUBLIC        IP
+  D:000AH         PUBLIC        PWM_T
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:000EH         PUBLIC        tm0_isr
+  B:00A8H.1       PUBLIC        ET0
+  C:0061H         PUBLIC        Timer0Init
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  C:0003H         PUBLIC        IntRegInit
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          INTREGINIT
+  C:0003H         LINE#         12
+  C:0003H         LINE#         13
+  C:0003H         LINE#         14
+  C:0005H         LINE#         15
+  C:0007H         LINE#         16
+  -------         ENDPROC       INTREGINIT
+  -------         PROC          TIMER0INIT
+  C:0061H         LINE#         18
+  C:0061H         LINE#         19
+  C:0061H         LINE#         20
+  C:0064H         LINE#         21
+  C:0067H         LINE#         22
+  C:006AH         LINE#         23
+  C:006CH         LINE#         24
+  -------         ENDPROC       TIMER0INIT
+  -------         PROC          TM0_ISR
+  C:000EH         LINE#         27
+  C:0012H         LINE#         29
+  C:0014H         LINE#         30
+  C:0019H         LINE#         31
+  C:0019H         LINE#         32
+  C:001CH         LINE#         33
+  C:001CH         LINE#         34
+  C:0023H         LINE#         35
+  C:0023H         LINE#         36
+  C:0025H         LINE#         37
+  C:0025H         LINE#         38
+  C:002CH         LINE#         39
+  C:002CH         LINE#         40
+  C:002EH         LINE#         41
+  C:002EH         LINE#         42
+  C:0035H         LINE#         43
+  C:0035H         LINE#         44
+  C:0037H         LINE#         45
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/24/2019  17:14:19  PAGE 4
+
+
+  C:0037H         LINE#         46
+  C:003EH         LINE#         47
+  C:003EH         LINE#         48
+  C:0040H         LINE#         49
+  C:0040H         LINE#         50
+  -------         ENDPROC       TM0_ISR
+  -------         ENDMOD        TIMER_ISR
+
+Program Size: data=12.0 xdata=0 code=118
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

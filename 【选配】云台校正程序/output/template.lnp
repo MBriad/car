@@ -1,0 +1,5 @@
+"..\output\servo.obj",
+"..\output\Delay.obj",
+"..\output\main.obj" 
+TO "..\output\template" 
+PRINT(".\template.m51") RAMSIZE(256) 

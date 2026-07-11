@@ -1,0 +1,44 @@
+C51 COMPILER V9.00   MOTOR                                                                 07/24/2019 17:14:18 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MOTOR
+OBJECT MODULE PLACED IN ..\output\motor.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\motor.c BROWSE DEBUG OBJECTEXTEND PRINT(.\motor.lst) OBJECT(..\ou
+                    -tput\motor.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "motor.h"
+   3          
+   4          uchar LeftMotorSpeed;
+   5          uchar RightMotorSpeed;
+   6          /*=================================================
+   7          *函数名称：SmartCarForward
+   8          *函数功能：智能小车前进
+   9          *调用：
+  10          *输入：LeftSpeedVal：左电机速度，输入范围100-255
+  11                     RightSpeedVal：右电机速度，输入范围100-255
+  12                     255速度最快，100最慢
+  13          =================================================*/
+  14          void SmartCarForward(uchar LeftSpeedVal,uchar RightSpeedVal)
+  15          {
+  16   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  17   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  18   1              LeftMotorGo;                                    //左电机前进
+  19   1              RightMotorGo;                                   //右电机前进
+  20   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     13    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,66 @@
+C51 COMPILER V9.00   ULTRASONIC                                                            08/02/2019 13:34:56 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE ULTRASONIC
+OBJECT MODULE PLACED IN ..\output\ultrasonic.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\ultrasonic.c BROWSE DEBUG OBJECTEXTEND PRINT(.\ultrasonic.lst) OB
+                    -JECT(..\output\ultrasonic.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer_ISR.h"
+   3          #include "ultrasonic.h"
+   4          #include "Delay.h"
+   5          
+   6          /*超声波触发*/
+   7          void TrigUltrasonic()
+   8          {
+   9   1              TrigPin = 0; //超声波模块Trig   控制端
+  10   1              _nop_();
+  11   1              _nop_();
+  12   1              _nop_();
+  13   1              _nop_();
+  14   1              _nop_();
+  15   1              TrigPin = 1; //超声波模块Trig   控制端
+  16   1              Delay15us();
+  17   1              TrigPin = 0; //超声波模块Trig   控制端
+  18   1      }
+  19          /*====================================
+  20          函数名  ：GetDistance
+  21          参数    ：无
+  22          返回值  ：获取距离单位毫米
+  23          描述    ：超声波测距
+  24          通过发射信号到收到回响信号的时间测试距离
+  25          单片机晶振11.0592Mhz
+  26          注意测距周期为60ms以上
+  27          ====================================*/
+  28          unsigned int GetDistance()
+  29          {
+  30   1              unsigned int Distance = 0;      //超声波距离
+  31   1              unsigned int  Time=0;           //用于存放定时器时间值
+  32   1              TrigUltrasonic();       //超声波触发
+  33   1              while(!EchoPin);        //判断回响信号是否为低电平
+  34   1              Timer1On;                       //启动定时器1
+  35   1              while(EchoPin);         //等待收到回响信号
+  36   1              Timer1Off;                      //关闭定时器1
+  37   1              Time=TH1*256+TL1;       //读取时间
+  38   1              TH1=0;
+  39   1              TL1=0;                          //清空定时器
+  40   1          Distance = (float)(Time*1.085)*0.17;//算出来是MM
+  41   1              return(Distance);//返回距离                             
+  42   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     84    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

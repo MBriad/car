@@ -1,0 +1,157 @@
+C51 COMPILER V9.00   _隹聿_量                                                              08/01/2019 16:43:22 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE _隹聿_量
+OBJECT MODULE PLACED IN 脉宽测量.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE 脉宽测量.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*********************************************************************************************************
+             -**/
+   2          //接线：模块TRIG接 P21  ECH0 接P20       VCC接VCC（5V），GND接GND
+   3          //数码管：共阴极
+   4          //数码管显示所测距离（毫米）
+   5          //注意请勿带电插拔
+   6          /*********************************************************************************************************
+             -**/            
+   7          #include <AT89x51.H>            //器件配置文件
+   8          #include <intrins.h>
+   9          #define  RX  P2_0
+  10          #define  TX  P2_1
+  11          sbit DU  = P2^6;   //数码管段选
+  12          sbit WE  = P2^7;   //数码管位选
+  13          unsigned int  time=0;
+  14          unsigned int  timer=0;
+  15          unsigned char posit=0;
+  16          unsigned long S=0;
+  17          bit      flag =0;
+  18          unsigned char const discode[] ={ 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F,0x6F,0x40,0x00/*-*/}
+             -;
+  19          unsigned char const positon[4]={ 0xfe,0xfd,0xfb,0xf7};
+  20          unsigned char disbuff[4]           ={ 0,0,0,0,};
+  21          /********************************************************/
+  22              void Display(void)                           //扫描数码管
+  23                  {
+  24   1              DU = 0; 
+  25   1               if(posit==0)
+  26   1               {P0=(discode[disbuff[posit]]);}
+  27   1               else
+  28   1               {P0=discode[disbuff[posit]];}
+  29   1               DU = 1;
+  30   1               DU = 0;
+  31   1               WE = 0;
+  32   1                P0=positon[posit];
+  33   1                WE=1;
+  34   1                WE=0;
+  35   1                if(++posit>=4)
+  36   1                posit=0;
+  37   1              }
+  38          /********************************************************/
+  39              void Conut(void)
+  40                  {
+  41   1               time=TH0*256+TL0;
+  42   1               TH0=0;
+  43   1               TL0=0;
+  44   1              
+  45   1               S=(float)(time*1.085)*0.17;     //算出来是MM
+  46   1               if((S>=7000)||flag==1) //超出测量范围显示“-”
+  47   1               {       
+  48   2                flag=0;
+  49   2                disbuff[0]=10;           //“-”
+  50   2                disbuff[1]=10;           //“-”
+  51   2                disbuff[2]=10;           //“-”
+  52   2                disbuff[3]=10;           //“-”
+C51 COMPILER V9.00   _隹聿_量                                                              08/01/2019 16:43:22 PAGE 2   
+
+  53   2               }
+  54   1               else
+  55   1               {
+  56   2                disbuff[0]=S/1000;
+  57   2                disbuff[1]=S%1000/100;
+  58   2                disbuff[2]=S%100/10;
+  59   2                disbuff[3]=S%10;
+  60   2               }
+  61   1              }
+  62          /********************************************************/
+  63               void zd0() interrupt 1              //T0中断用来计数器溢出,超过测距范围
+  64            {
+  65   1          flag=1;                                                      //中断溢出标志
+  66   1        }
+  67          /********************************************************/
+  68             void  zd3()  interrupt 3              //T1中断用来扫描数码管和计800MS启动模块
+  69            {
+  70   1               TH1=0xf8;
+  71   1               TL1=0x30;
+  72   1               Display();
+  73   1               timer++;
+  74   1               if(timer>=400)
+  75   1               {
+  76   2                timer=0;
+  77   2                TX=1;                                 //800MS  启动一次模块
+  78   2                _nop_(); 
+  79   2                _nop_(); 
+  80   2                _nop_(); 
+  81   2                _nop_(); 
+  82   2                _nop_(); 
+  83   2                _nop_(); 
+  84   2                _nop_(); 
+  85   2                _nop_(); 
+  86   2                _nop_(); 
+  87   2                _nop_(); 
+  88   2                _nop_(); 
+  89   2                _nop_(); 
+  90   2                _nop_(); 
+  91   2                _nop_(); 
+  92   2                _nop_(); 
+  93   2                _nop_(); 
+  94   2                _nop_();
+  95   2                _nop_(); 
+  96   2                _nop_(); 
+  97   2                _nop_(); 
+  98   2                _nop_();
+  99   2                TX=0;
+ 100   2               } 
+ 101   1        }
+ 102          /*********************************************************/
+ 103          
+ 104                  void  main(  void  )
+ 105          
+ 106            {  
+ 107   1          TMOD=0x11;             //设T0,T1为方式1定时模式，GATE=1；
+ 108   1              TH0=0;
+ 109   1              TL0=0;          
+ 110   1              TH1=0xf8;                  //2MS定时
+ 111   1              TL1=0x30;
+ 112   1              ET0=1;             //允许T0中断
+ 113   1              ET1=1;                     //允许T1中断
+ 114   1              TR1=1;                     //开启定时器1
+C51 COMPILER V9.00   _隹聿_量                                                              08/01/2019 16:43:22 PAGE 3   
+
+ 115   1              EA=1;                      //开启总中断
+ 116   1      
+ 117   1              while(1)
+ 118   1              {
+ 119   2               while(!RX);            //当RX（ECHO信号回响）为零时等待
+ 120   2               TR0=1;                     //开启计数
+ 121   2               while(RX);                     //当RX为1计数并等待
+ 122   2               TR0=0;                         //关闭计数
+ 123   2           Conut();                   //计算
+ 124   2              }
+ 125   1      
+ 126   1        }
+ 127                          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    364    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     29    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

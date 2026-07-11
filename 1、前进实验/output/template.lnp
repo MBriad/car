@@ -1,0 +1,5 @@
+"..\output\main.obj",
+"..\output\motor.obj",
+"..\output\timer_ISR.obj" 
+TO "..\output\template" 
+PRINT(".\template.m51") RAMSIZE(256) 

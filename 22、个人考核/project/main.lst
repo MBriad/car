@@ -1,0 +1,103 @@
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 09:55:06 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\output\main.obj
+COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTE
+                    -ND PRINT(.\main.lst) OBJECT(..\output\main.obj)
+
+line level    source
+
+   1          /*
+   2          * ����дʱ�䡿�� 2019��8��6��
+   3          * ����    �ߡ��� �������:01
+   4          * ����    ������ 1.7 �Ż���������̨�����߼�
+   5          * ����    վ���� http://www.qxmcu.com/ 
+   6          * ���Ա����̡��� http://qxmcu.taobao.com/ 
+   7          * ��ʵ��ƽ̨���� QX-MCS51 ��Ƭ�������� & QX-A51����С��
+   8          * ���ⲿ���񡿣� 11.0592mhz       
+   9          * ������оƬ���� STC89C52
+  10          * �����뻷������ Keil ��Visio4
+  11          * �������ܡ��� ��̨���ϣ���������̨�������ϣ
+             -�1602Һ����ʾ����
+  12          * ��ʹ��˵������ 1���������1602Һ����ʾ��
+  13                                           2���뽫�������ذ��С���װ��ϵ�P32-P35��4P�Ű��߰ε�
+  14                                           3����װ�������Ű��ߣ��ֱ��С��������P34�ӵ���
+             -���ذ��P10�ϣ�P35�ӵ����ذ��P11��
+  15          
+  16                                           Һ����һ����ʾ��̨��෽�򣬷ֱ�ΪD��Fǰ����L����,R�
+             -���
+  17                                           �ڶ�������ʾ�ľ��룬��λ����
+  18                                           ����ͨ�������ʾ��Ϣ����������С�������߼�
+             -���������ϲ�ͬʵ�黷��
+  19                                           �¶���Ҫ���Բ��ܴﵽ����Ч����
+  20                                           ִ���߼�app.c�ļ�����PTZ_Avoid����
+  21          * ��ע������� ��̨����ײ
+  22          */
+  23          
+  24          #define  _MAIN_C
+  25          #include "config.h"
+  26          #include "motor.h"
+  27          #include "Delay.h"
+  28          #include "timer_ISR.h"
+  29          #include "LCD1602.h"
+  30          #include "ultrasonic.h"
+  31          #include "app.h"
+  32          #include "Servo.h"
+  33          #include "main.h"
+  34          
+  35          uchar LeftSpeed, RightSpeed;//�����������ٶ�
+  36          void keyscan()
+  37          {
+  38   1              for(;;) //��ѭ��
+  39   1              {
+  40   2                      if(KEY_S2 == 0)// ʵʱ���S2�����Ƿ񱻰���
+  41   2                      {
+  42   3                              Delay1ms(5); //��������
+  43   3                              if(KEY_S2 == 0)//�ټ��S2�Ƿ񱻰���
+  44   3                              {
+  45   4                                      while(!KEY_S2);//���ּ��
+  46   4                                      BUZZER_on;      //����������
+  47   4                                      Delay1ms(200);//200������ʱ
+  48   4                                      BUZZER_off;     //�رշ�����
+  49   4                                      break;          //�˳�FOR��ѭ��
+  50   4                              }
+C51 COMPILER V9.54   MAIN                                                                  07/11/2026 09:55:06 PAGE 2   
+
+  51   3                      }
+  52   2              }       
+  53   1      }
+  54          void main()
+  55          {
+  56   1      //      LeftSpeed       = 150;//���������ٶ�
+  57   1      //      RightSpeed      = 150;//���������ٶ�
+  58   1              IntRegInit();//中断寄存器初始化
+  59   1              Timer0Init();//PWM调速初始化
+  60   1              Timer1Init();//初始化定时器
+  61   1              Init_LCD1602(); //LCD1602��ʼ��
+  62   1              ServoFront(); //��ʼ���������
+  63   1              LCD1602_Dis_Str(0, 0, "Please press the"); //LCD1602д�ַ���
+  64   1              LCD1602_Dis_Str(0, 1, "S2 to start"); //LCD1602д�ַ����밴��S2����С��
+  65   1              keyscan();//��S2��������
+  66   1              LCD1602_Clear_Screen();//LCD1602����    
+  67   1              while(1)
+  68   1              {
+  69   2                      AssessmentRun();
+  70   2                      SmartCarStops();
+  71   2                      while(1);
+  72   2              }
+  73   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     82    ----
+   CONSTANT SIZE    =     29    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

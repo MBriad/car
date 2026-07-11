@@ -1,0 +1,91 @@
+C51 COMPILER V9.00   TIMER_ISR                                                             08/02/2019 20:32:54 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE TIMER_ISR
+OBJECT MODULE PLACED IN ..\output\timer_ISR.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\timer_ISR.c BROWSE DEBUG OBJECTEXTEND PRINT(.\timer_ISR.lst) OBJE
+                    -CT(..\output\timer_ISR.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer_ISR.h"
+   3          #include "motor.h"
+   4          #include "app.h"
+   5          
+   6          uchar PWM_T;//PWW周期
+   7          /*=================================================
+   8          *函数名称：IntRegInit
+   9          *函数功能：中断寄存器初始化
+  10          *调用：
+  11          *输入：
+  12          =================================================*/
+  13          void IntRegInit()
+  14          {
+  15   1              ET0 = 1;//允许定时器0中断
+  16   1              ET1 = 1;             //允许T1中断
+  17   1              EA      = 1;//总中断允许        
+  18   1      }
+  19          /*定时器0初始化*/
+  20          void Timer0Init(void)           //100微秒@11.0592MHz
+  21          {
+  22   1              TMOD |= 0x02;//定时器0，8位自动重装模块
+  23   1              TH0 = 0xA4;
+  24   1              TL0 = 0xA4;//100US中断一次
+  25   1              TR0 = 1;//启动定时器0
+  26   1      }
+  27          
+  28          /*定时器1初始化*/
+  29          void Timer1Init(void)           
+  30          {
+  31   1              TMOD |= 0x10;   //定时器1工作模式1,16位定时模式。T1用测ECH0脉冲长度
+  32   1              TH1 = 0;                   
+  33   1          TL1 = 0;
+  34   1      }
+  35          /* Timer0 interrupt routine */
+  36          void tm0_isr() interrupt 1 using 1
+  37          {
+  38   1              PWM_T++;
+  39   1              if(PWM_T == 255)                //频率F=1000000/T0溢出时间*255
+  40   1              {
+  41   2                      PWM_T = 0;
+  42   2              }
+  43   1              if(RightMotorSpeed >= PWM_T)
+  44   1              {
+  45   2                      RightMotor_EN = 1;      //使能右马达
+  46   2              }
+  47   1              if(LeftMotorSpeed >= PWM_T)
+  48   1              {
+  49   2                      LeftMotor_EN  = 1;  //使能左马达
+  50   2              }               
+  51   1              if(LeftMotorSpeed < PWM_T)
+  52   1              {
+  53   2                      LeftMotor_EN  = 0;  //禁用左马达
+  54   2              }               
+C51 COMPILER V9.00   TIMER_ISR                                                             08/02/2019 20:32:54 PAGE 2   
+
+  55   1              if(RightMotorSpeed < PWM_T)
+  56   1              {
+  57   2                      RightMotor_EN = 0;      //禁用右马达
+  58   2              }       
+  59   1      }
+  60          /* Timer0 interrupt routine */
+  61          void tm1_isr() interrupt 3 using 1
+  62          {
+  63   1              Timer1Overflow = 1;     //计数器1溢出标志位
+  64   1              EchoPin = 0;            //超声波接收端  
+  65   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     88    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

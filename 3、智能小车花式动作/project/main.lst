@@ -1,0 +1,114 @@
+C51 COMPILER V9.00   MAIN                                                                  07/24/2019 17:15:20 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\output\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\main.c BROWSE DEBUG OBJECTEXTEND PRINT(.\main.lst) OBJECT(..\outp
+                    -ut\main.obj)
+
+line level    source
+
+   1          #define  _MAIN_C
+   2          #include "config.h"
+   3          #include "timer_ISR.h"
+   4          #include "motor.h"
+   5          #include "Delay.h"
+   6          #include "main.h"
+   7          
+   8          void main()
+   9          {
+  10   1              uchar i;
+  11   1              IntRegInit();//中断寄存器初始化
+  12   1              Timer0Init();//PWM调速初始化
+  13   1              SmartCarForward(100, 130);//智能小车前进调节范围80-255,255最快
+  14   1              Delay1ms(2000);                 //延时2秒
+  15   1              SmartCarBack(100, 130); //智能小车后退
+  16   1              Delay1ms(2000);                 //延时2秒
+  17   1              /*间歇性前进*/
+  18   1              for(i=0; i<8; i++)
+  19   1              {
+  20   2                      SmartCarForward(100, 130);
+  21   2                      Delay1ms(200);
+  22   2                      SmartCarStops();
+  23   2                      Delay1ms(200);  
+  24   2              }
+  25   1              /*间歇性后退*/
+  26   1              for(i=0; i<8; i++)
+  27   1              {
+  28   2                      SmartCarBack(100, 130);
+  29   2                      Delay1ms(200);
+  30   2                      SmartCarStops();
+  31   2                      Delay1ms(200);  
+  32   2              }
+  33   1              /*左转与坦克掉头嵌套*/
+  34   1              for(i=0; i<8; i++)
+  35   1              {
+  36   2                      SmartCarLeft(100, 130);
+  37   2                      Delay1ms(400);
+  38   2                      SmartCarStops();
+  39   2                      Delay1ms(200);
+  40   2                      SmartCarRightTurn(100, 130);
+  41   2                      Delay1ms(200);
+  42   2                      SmartCarStops();
+  43   2                      Delay1ms(200);  
+  44   2              }
+  45   1              /*右小转与坦克掉头嵌套*/
+  46   1              for(i=0; i<8; i++)
+  47   1              {
+  48   2                      SmartCarRight(100, 130);
+  49   2                      Delay1ms(400);
+  50   2                      SmartCarStops();
+  51   2                      Delay1ms(200);
+  52   2                      SmartCarLeftTurn(100, 130);
+  53   2                      Delay1ms(200);
+  54   2                      SmartCarStops();
+C51 COMPILER V9.00   MAIN                                                                  07/24/2019 17:15:20 PAGE 2   
+
+  55   2                      Delay1ms(200);  
+  56   2              }
+  57   1              /*小车间歇性前进与左转*/
+  58   1              for(i=0; i<8; i++)
+  59   1              {
+  60   2                      SmartCarForward(100, 130);
+  61   2                      Delay1ms(400);
+  62   2                      SmartCarStops();
+  63   2                      Delay1ms(200);
+  64   2                      SmartCarLeft(100, 130);
+  65   2                      Delay1ms(200);
+  66   2                      SmartCarStops();
+  67   2                      Delay1ms(200);  
+  68   2              }
+  69   1              /*间歇性前进与右转*/
+  70   1              for(i=0; i<8; i++)
+  71   1              {
+  72   2                      SmartCarForward(100, 130);
+  73   2                      Delay1ms(400);
+  74   2                      SmartCarStops();
+  75   2                      Delay1ms(200);
+  76   2                      SmartCarRight(100, 130);
+  77   2                      Delay1ms(200);
+  78   2                      SmartCarStops();
+  79   2                      Delay1ms(200);  
+  80   2              }
+  81   1              SmartCarForward(255, 60); //转圈
+  82   1              Delay1ms(10000);
+  83   1              SmartCarStops();//智能小车停车
+  84   1              BUZZER = 0;         //开蜂鸣器
+  85   1              Delay1ms(1000);
+  86   1              BUZZER = 1;             //关蜂鸣器
+  87   1              while(1);
+  88   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    376    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

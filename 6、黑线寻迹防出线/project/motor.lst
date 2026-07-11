@@ -1,0 +1,118 @@
+C51 COMPILER V9.00   MOTOR                                                                 07/27/2019 15:45:08 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MOTOR
+OBJECT MODULE PLACED IN ..\output\motor.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\motor.c BROWSE DEBUG OBJECTEXTEND PRINT(.\motor.lst) OBJECT(..\ou
+                    -tput\motor.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "motor.h"
+   3          
+   4          uchar LeftMotorSpeed;
+   5          uchar RightMotorSpeed;
+   6          /*=================================================
+   7          *函数名称：SmartCarForward
+   8          *函数功能：智能小车前进
+   9          *调用：
+  10          *输入：LeftSpeedVal：左电机速度，输入范围100-255
+  11                     RightSpeedVal：右电机速度，输入范围100-255
+  12                     255速度最快，100最慢
+  13          =================================================*/
+  14          void SmartCarForward(uchar LeftSpeedVal,uchar RightSpeedVal)
+  15          {
+  16   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  17   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  18   1              LeftMotorGo;                                    //左电机正转
+  19   1              RightMotorGo;                                   //右电机正转
+  20   1      }
+  21          /*=================================================
+  22          *函数名称：SmartCarBack
+  23          *函数功能：智能小车后退
+  24          *调用：
+  25          *输入：LeftSpeedVal：左电机速度，输入范围100-255
+  26                     RightSpeedVal：右电机速度，输入范围100-255
+  27                     255速度最快，100最慢
+  28          =================================================*/
+  29          void SmartCarBack(uchar LeftSpeedVal,uchar RightSpeedVal)
+  30          {
+  31   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  32   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  33   1              LeftMotorBack;                                  //左电机反转
+  34   1              RightMotorBack;                                 //右电机反转
+  35   1      }
+  36          /*=================================================
+  37          *函数名称：SmartCarLeft
+  38          *函数功能：智能小车左转
+  39          *调用：
+  40          *输入：LeftSpeedVal：左电机速度，输入范围100-255
+  41                     RightSpeedVal：右电机速度，输入范围100-255
+  42                     255速度最快，100最慢
+  43          =================================================*/
+  44          void SmartCarLeft(uchar LeftSpeedVal,uchar RightSpeedVal)
+  45          {
+  46   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  47   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  48   1              LeftMotorStop;                                  //左电机停转
+  49   1              RightMotorGo;                                   //右电机正转
+  50   1      }
+  51          /*小车左掉头，可以在自身长度范围内掉头*/
+  52          void SmartCarLeftTurn(uchar LeftSpeedVal,uchar RightSpeedVal)
+  53          {
+  54   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+C51 COMPILER V9.00   MOTOR                                                                 07/27/2019 15:45:08 PAGE 2   
+
+  55   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  56   1              LeftMotorBack;                                  //左电机反转
+  57   1              RightMotorGo;                                   //右电机正转
+  58   1      }
+  59          /*=================================================
+  60          *函数名称：SmartCarRight
+  61          *函数功能：智能小车右转
+  62          *调用：
+  63          *输入：LeftSpeedVal：左电机速度，输入范围100-255
+  64                     RightSpeedVal：右电机速度，输入范围100-255
+  65                     255速度最快，100最慢
+  66          =================================================*/
+  67          void SmartCarRight(uchar LeftSpeedVal,uchar RightSpeedVal)
+  68          {
+  69   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  70   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  71   1              LeftMotorGo;                                    //左电机正转
+  72   1              RightMotorStop;                                 //右电机停转
+  73   1      }
+  74          /*小车右掉头，可以在自身长度范围内掉头*/
+  75          void SmartCarRightTurn(uchar LeftSpeedVal,uchar RightSpeedVal)
+  76          {
+  77   1              LeftMotorSpeed = LeftSpeedVal;  //设置左侧电机速度
+  78   1              RightMotorSpeed= RightSpeedVal; //设置右侧电机速的      
+  79   1              LeftMotorGo;                                    //左电机正转
+  80   1              RightMotorBack;                                 //右电机反转
+  81   1      }
+  82          /*=================================================
+  83          *函数名称：SmartCarStops
+  84          *函数功能：智能小车停车
+  85          *调用：
+  86          *输入：
+  87          =================================================*/
+  88          void SmartCarStops(void)
+  89          {       
+  90   1              LeftMotorStop;                                  //左电机停转
+  91   1              RightMotorStop;                                 //右电机停转
+  92   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     87    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

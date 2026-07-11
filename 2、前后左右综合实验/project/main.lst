@@ -1,0 +1,46 @@
+C51 COMPILER V9.00   MAIN                                                                  07/24/2019 17:14:51 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\output\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\main.c BROWSE DEBUG OBJECTEXTEND PRINT(.\main.lst) OBJECT(..\outp
+                    -ut\main.obj)
+
+line level    source
+
+   1          #define  _MAIN_C
+   2          #include "config.h"
+   3          #include "timer_ISR.h"
+   4          #include "motor.h"
+   5          #include "Delay.h"
+   6          #include "main.h"
+   7          
+   8          void main()
+   9          {
+  10   1              IntRegInit();//中断寄存器初始化
+  11   1              Timer0Init();//PWM调速初始化
+  12   1              SmartCarForward(100, 130);//智能小车前进调节范围80-255,255最快
+  13   1              Delay1ms(2000);                 //延时2秒
+  14   1              SmartCarBack(100, 130); //智能小车后退
+  15   1              Delay1ms(2000);                 //延时2秒
+  16   1              SmartCarLeft(100, 130); //智能小车左转
+  17   1              Delay1ms(2000);                 //延时2秒
+  18   1              SmartCarRight(100, 130);//智能小车右转
+  19   1              Delay1ms(2000);                 //延时2秒
+  20   1              SmartCarStops();//智能小车停车
+  21   1              while(1);
+  22   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     67    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

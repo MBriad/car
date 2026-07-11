@@ -1,0 +1,119 @@
+C51 COMPILER V9.54   SERVO                                                                 07/11/2026 09:55:06 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE SERVO
+OBJECT MODULE PLACED IN ..\output\servo.obj
+COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\servo.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXT
+                    -END PRINT(.\servo.lst) OBJECT(..\output\servo.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "Delay.h"
+   3          #include "Servo.h"
+   4          /*=================================================
+   5          *�������ƣ�ServoFront
+   6          *�������ܣ���̨��ǰת��
+   7          *���ã�
+   8          *���룺
+   9          =================================================*/
+  10          void ServoFront()
+  11          {
+  12   1              char i;
+  13   1              EA_off; //�ر��жϷ����Ӱ����ת��
+  14   1              for(i=0;i<10;i++)
+  15   1              {       
+  16   2                      ServoPin = 1;
+  17   2                      Delay1550us();
+  18   2                      ServoPin = 0;
+  19   2                      Delay18450us();
+  20   2              }
+  21   1              EA_on;  //���ж�
+  22   1              Delay1ms(100);
+  23   1      }
+  24          /*=================================================
+  25          *�������ƣ�ServoLeft
+  26          *�������ܣ���̨����ת��
+  27          *���ã�
+  28          *���룺
+  29          =================================================*/
+  30          void ServoLeft()
+  31          {
+  32   1              char i;
+  33   1              EA_off; //�ر��жϷ����Ӱ����ת��
+  34   1              for(i=0;i<10;i++)
+  35   1              {       
+  36   2                      ServoPin = 1;
+  37   2                      Delay2500us();
+  38   2                      ServoPin = 0;
+  39   2                      Delay17500us();
+  40   2              }
+  41   1              EA_on;  //���ж�
+  42   1              Delay1ms(100);
+  43   1      }
+  44          /*=================================================
+  45          *�������ƣ�ServoFront
+  46          *�������ܣ���̨����ת��
+  47          *���ã�
+  48          *���룺
+  49          =================================================*/
+  50          void ServoRight()
+  51          {
+  52   1              char i;
+  53   1              EA_off; //�ر��жϷ����Ӱ����ת��
+  54   1              for(i=0;i<10;i++)
+C51 COMPILER V9.54   SERVO                                                                 07/11/2026 09:55:06 PAGE 2   
+
+  55   1              {
+  56   2                      ServoPin = 1;
+  57   2                      Delay600us();
+  58   2                      ServoPin = 0;
+  59   2                      Delay19400us();
+  60   2              }
+  61   1              EA_on;  //���ж�
+  62   1              Delay1ms(100);
+  63   1      }
+  64          
+  65          void ServoLeft45()
+  66          {
+  67   1              char i;
+  68   1              EA_off;
+  69   1              for(i=0;i<10;i++)
+  70   1              {
+  71   2                      ServoPin = 1;
+  72   2                      Delay2000us();
+  73   2                      ServoPin = 0;
+  74   2                      Delay18000us();
+  75   2              }
+  76   1              EA_on;
+  77   1              Delay1ms(100);
+  78   1      }
+  79          
+  80          void ServoRight45()
+  81          {
+  82   1              char i;
+  83   1              EA_off;
+  84   1              for(i=0;i<10;i++)
+  85   1              {
+  86   2                      ServoPin = 1;
+  87   2                      Delay1000us();
+  88   2                      ServoPin = 0;
+  89   2                      Delay19000us();
+  90   2              }
+  91   1              EA_on;
+  92   1              Delay1ms(100);
+  93   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    175    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

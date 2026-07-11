@@ -1,0 +1,65 @@
+C51 COMPILER V9.00   MAIN                                                                  08/01/2019 14:53:54 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\output\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\main.c BROWSE DEBUG OBJECTEXTEND PRINT(.\main.lst) OBJECT(..\outp
+                    -ut\main.obj)
+
+line level    source
+
+   1          #define  _MAIN_C
+   2          #include "config.h"
+   3          #include "timer_ISR.h"
+   4          #include "motor.h"
+   5          #include "Delay.h"
+   6          #include "app.h"
+   7          #include "main.h"
+   8          
+   9          uchar LeftSpeed, RightSpeed;//设置左右轮速度
+  10          void keyscan()
+  11          {
+  12   1              for(;;) //死循环
+  13   1              {
+  14   2                      if(KEY_S2 == 0)// 实时检测S2按键是否被按下
+  15   2                      {
+  16   3                              Delay1ms(5); //软件消抖
+  17   3                              if(KEY_S2 == 0)//再检测S2是否被按下
+  18   3                              {
+  19   4                                      while(!KEY_S2);//松手检测
+  20   4                                      BUZZER_on;      //开启蜂鸣器
+  21   4                                      Delay1ms(200);//200毫秒延时
+  22   4                                      BUZZER_off;     //关闭蜂鸣器
+  23   4                                      break;          //退出FOR死循环
+  24   4                              }
+  25   3                      }
+  26   2              }       
+  27   1      }
+  28          
+  29          void main()
+  30          {
+  31   1              /*小车速度设置80~255,255最快*/
+  32   1              LeftSpeed       = 150;//左轮速度
+  33   1              RightSpeed      = 150;//右轮速度
+  34   1              IntRegInit();//中断寄存器初始化
+  35   1              Timer0Init();//PWM调速初始化
+  36   1              keyscan();//按S2按键启动
+  37   1              while(1)
+  38   1              {
+  39   2                      IR_Follow();//红外物体跟随      
+  40   2              }
+  41   1      } 
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     48    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

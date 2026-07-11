@@ -1,0 +1,350 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        08/01/2019  13:43:28  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE ..\output\main.obj, ..\output\motor.obj, ..\output\timer_ISR.obj, ..\output\Delay.obj, ..\outpu
+>> t\app.obj TO ..\output\template PRINT (.\template.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  ..\output\main.obj (MAIN)
+  ..\output\motor.obj (MOTOR)
+  ..\output\timer_ISR.obj (TIMER_ISR)
+  ..\output\Delay.obj (DELAY)
+  ..\output\app.obj (APP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  ..\output\template (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?MAIN
+            DATA    000AH     0002H     UNIT         ?DT?MOTOR
+            DATA    000CH     0001H     UNIT         ?DT?TIMER_ISR
+            IDATA   000DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0005H     UNIT         ?PR?INTREGINIT?TIMER_ISR
+                    0008H     0003H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     003AH     UNIT         ?PR?IR_AVOID2?APP
+            CODE    0048H     0037H     UNIT         ?PR?TM0_ISR?TIMER_ISR
+            CODE    007FH     001CH     UNIT         ?PR?KEYSCAN?MAIN
+            CODE    009BH     0017H     UNIT         ?PR?_DELAY1MS?DELAY
+            CODE    00B2H     0014H     UNIT         ?PR?MAIN?MAIN
+            CODE    00C6H     000DH     UNIT         ?PR?_SMARTCARFORWARD?MOTOR
+            CODE    00D3H     000DH     UNIT         ?PR?_SMARTCARLEFT?MOTOR
+            CODE    00E0H     000DH     UNIT         ?PR?_SMARTCARRIGHT?MOTOR
+            CODE    00EDH     000DH     UNIT         ?PR?_SMARTCARRIGHTTURN?MOTOR
+            CODE    00FAH     000CH     UNIT         ?PR?TIMER0INIT?TIMER_ISR
+            CODE    0106H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   ..\output\template (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/01/2019  13:43:28  PAGE 2
+
+
+?PR?MAIN?MAIN
+  +--> ?PR?INTREGINIT?TIMER_ISR
+  +--> ?PR?TIMER0INIT?TIMER_ISR
+  +--> ?PR?KEYSCAN?MAIN
+  +--> ?PR?IR_AVOID2?APP
+
+?PR?KEYSCAN?MAIN
+  +--> ?PR?_DELAY1MS?DELAY
+
+?PR?IR_AVOID2?APP
+  +--> ?PR?_SMARTCARRIGHT?MOTOR
+  +--> ?PR?_SMARTCARLEFT?MOTOR
+  +--> ?PR?_SMARTCARRIGHTTURN?MOTOR
+  +--> ?PR?_DELAY1MS?DELAY
+  +--> ?PR?_SMARTCARFORWARD?MOTOR
+
+
+
+SYMBOL TABLE OF MODULE:  ..\output\template (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:0008H         PUBLIC        LeftSpeed
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:00B2H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:00B0H.0       PUBLIC        KEY_S2
+  B:00A0H.3       PUBLIC        BUZZER
+  D:00C8H         PUBLIC        T2CON
+  C:007FH         PUBLIC        keyscan
+  D:0009H         PUBLIC        RightSpeed
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          KEYSCAN
+  C:007FH         LINE#         10
+  C:007FH         LINE#         11
+  C:007FH         LINE#         12
+  C:007FH         LINE#         13
+  C:007FH         LINE#         14
+  C:0082H         LINE#         15
+  C:0082H         LINE#         16
+  C:0089H         LINE#         17
+  C:008CH         LINE#         18
+  C:008CH         LINE#         19
+  C:008FH         LINE#         20
+  C:0091H         LINE#         21
+  C:0098H         LINE#         22
+  C:009AH         LINE#         23
+  C:009AH         LINE#         24
+  C:009AH         LINE#         25
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/01/2019  13:43:28  PAGE 3
+
+
+  C:009AH         LINE#         26
+  C:009AH         LINE#         27
+  -------         ENDPROC       KEYSCAN
+  -------         PROC          MAIN
+  C:00B2H         LINE#         29
+  C:00B2H         LINE#         30
+  C:00B2H         LINE#         32
+  C:00B5H         LINE#         33
+  C:00B8H         LINE#         34
+  C:00BBH         LINE#         35
+  C:00BEH         LINE#         36
+  C:00C1H         LINE#         37
+  C:00C1H         LINE#         38
+  C:00C1H         LINE#         39
+  C:00C4H         LINE#         40
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        MOTOR
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:000AH         PUBLIC        RightMotorSpeed
+  D:00A8H         PUBLIC        IE
+  D:000BH         PUBLIC        LeftMotorSpeed
+  D:00B8H         PUBLIC        IP
+  C:00E0H         PUBLIC        _SmartCarRight
+  C:00D3H         PUBLIC        _SmartCarLeft
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:0090H.2       PUBLIC        IN1
+  B:0090H.3       PUBLIC        IN2
+  B:0090H.6       PUBLIC        IN3
+  B:0090H.7       PUBLIC        IN4
+  C:00EDH         PUBLIC        _SmartCarRightTurn
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  C:00C6H         PUBLIC        _SmartCarForward
+  -------         PROC          _SMARTCARFORWARD
+  D:0007H         SYMBOL        LeftSpeedVal
+  D:0005H         SYMBOL        RightSpeedVal
+  C:00C6H         LINE#         14
+  C:00C6H         LINE#         15
+  C:00C6H         LINE#         16
+  C:00C8H         LINE#         17
+  C:00CAH         LINE#         18
+  C:00CEH         LINE#         19
+  C:00D2H         LINE#         20
+  -------         ENDPROC       _SMARTCARFORWARD
+  -------         PROC          _SMARTCARLEFT
+  D:0007H         SYMBOL        LeftSpeedVal
+  D:0005H         SYMBOL        RightSpeedVal
+  C:00D3H         LINE#         44
+  C:00D3H         LINE#         45
+  C:00D3H         LINE#         46
+  C:00D5H         LINE#         47
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/01/2019  13:43:28  PAGE 4
+
+
+  C:00D7H         LINE#         48
+  C:00DBH         LINE#         49
+  C:00DFH         LINE#         50
+  -------         ENDPROC       _SMARTCARLEFT
+  -------         PROC          _SMARTCARRIGHT
+  D:0007H         SYMBOL        LeftSpeedVal
+  D:0005H         SYMBOL        RightSpeedVal
+  C:00E0H         LINE#         67
+  C:00E0H         LINE#         68
+  C:00E0H         LINE#         69
+  C:00E2H         LINE#         70
+  C:00E4H         LINE#         71
+  C:00E8H         LINE#         72
+  C:00ECH         LINE#         73
+  -------         ENDPROC       _SMARTCARRIGHT
+  -------         PROC          _SMARTCARRIGHTTURN
+  D:0007H         SYMBOL        LeftSpeedVal
+  D:0005H         SYMBOL        RightSpeedVal
+  C:00EDH         LINE#         75
+  C:00EDH         LINE#         76
+  C:00EDH         LINE#         77
+  C:00EFH         LINE#         78
+  C:00F1H         LINE#         79
+  C:00F5H         LINE#         80
+  C:00F9H         LINE#         81
+  -------         ENDPROC       _SMARTCARRIGHTTURN
+  -------         ENDMOD        MOTOR
+
+  -------         MODULE        TIMER_ISR
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  B:0090H.5       PUBLIC        RightMotor_EN
+  D:00A8H         PUBLIC        IE
+  B:0090H.4       PUBLIC        LeftMotor_EN
+  D:00B8H         PUBLIC        IP
+  D:000CH         PUBLIC        PWM_T
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:0048H         PUBLIC        tm0_isr
+  B:00A8H.1       PUBLIC        ET0
+  C:00FAH         PUBLIC        Timer0Init
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  C:0003H         PUBLIC        IntRegInit
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          INTREGINIT
+  C:0003H         LINE#         12
+  C:0003H         LINE#         13
+  C:0003H         LINE#         14
+  C:0005H         LINE#         15
+  C:0007H         LINE#         16
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/01/2019  13:43:28  PAGE 5
+
+
+  -------         ENDPROC       INTREGINIT
+  -------         PROC          TIMER0INIT
+  C:00FAH         LINE#         18
+  C:00FAH         LINE#         19
+  C:00FAH         LINE#         20
+  C:00FDH         LINE#         21
+  C:0100H         LINE#         22
+  C:0103H         LINE#         23
+  C:0105H         LINE#         24
+  -------         ENDPROC       TIMER0INIT
+  -------         PROC          TM0_ISR
+  C:0048H         LINE#         27
+  C:004CH         LINE#         29
+  C:0051H         LINE#         30
+  C:0051H         LINE#         31
+  C:0054H         LINE#         32
+  C:0054H         LINE#         33
+  C:005BH         LINE#         34
+  C:005BH         LINE#         35
+  C:005DH         LINE#         36
+  C:005DH         LINE#         37
+  C:0064H         LINE#         38
+  C:0064H         LINE#         39
+  C:0066H         LINE#         40
+  C:0066H         LINE#         41
+  C:006DH         LINE#         42
+  C:006DH         LINE#         43
+  C:006FH         LINE#         44
+  C:006FH         LINE#         45
+  C:0076H         LINE#         46
+  C:0076H         LINE#         47
+  C:0078H         LINE#         48
+  C:0078H         LINE#         49
+  C:007AH         LINE#         50
+  -------         ENDPROC       TM0_ISR
+  -------         ENDMOD        TIMER_ISR
+
+  -------         MODULE        DELAY
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:009BH         PUBLIC        _Delay1ms
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _DELAY1MS
+  D:0006H         SYMBOL        ms
+  -------         DO            
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+  C:009BH         LINE#         10
+  C:009BH         LINE#         11
+  C:009BH         LINE#         13
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/01/2019  13:43:28  PAGE 6
+
+
+  C:009BH         LINE#         14
+  C:009FH         LINE#         15
+  C:00A8H         LINE#         16
+  C:00B1H         LINE#         17
+  -------         ENDPROC       _DELAY1MS
+  -------         ENDMOD        DELAY
+
+  -------         MODULE        APP
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  B:00B0H.4       PUBLIC        AvoidSensorLeft
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:000EH         PUBLIC        IR_Avoid2
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+  B:00B0H.5       PUBLIC        AvoidSensorRight
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          IR_AVOID2
+  C:000EH         LINE#         30
+  C:000EH         LINE#         31
+  C:000EH         LINE#         32
+  C:0014H         LINE#         33
+  C:0014H         LINE#         34
+  C:001BH         LINE#         35
+  C:001BH         LINE#         36
+  C:0023H         LINE#         37
+  C:0023H         LINE#         38
+  C:002AH         LINE#         39
+  C:002AH         LINE#         40
+  C:0032H         LINE#         41
+  C:0032H         LINE#         42
+  C:0039H         LINE#         43
+  C:0040H         LINE#         44
+  C:0040H         LINE#         45
+  C:0040H         LINE#         46
+  C:0047H         LINE#         47
+  C:0047H         LINE#         48
+  -------         ENDPROC       IR_AVOID2
+  -------         ENDMOD        APP
+
+Program Size: data=14.0 xdata=0 code=271
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

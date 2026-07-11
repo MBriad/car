@@ -1,0 +1,76 @@
+C51 COMPILER V9.00   TIMER                                                                 07/19/2019 18:03:14 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE TIMER
+OBJECT MODULE PLACED IN ..\output\timer.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\timer.c BROWSE DEBUG OBJECTEXTEND PRINT(.\timer.lst) OBJECT(..\ou
+                    -tput\timer.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer.h"
+   3          #include "motor.h"
+   4          
+   5          uchar PWM_T;//PWW周期
+   6          /*=================================================
+   7          *函数名称：IntRegInit
+   8          *函数功能：中断寄存器初始化
+   9          *调用：
+  10          *输入：
+  11          =================================================*/
+  12          void IntRegInit()
+  13          {
+  14   1              ET0 = 1;//允许定时器0中断
+  15   1              EA      = 1;//总中断允许        
+  16   1      }
+  17          /*定时器0初始化*/
+  18          void Timer0Init(void)           //100微秒@11.0592MHz
+  19          {
+  20   1              TMOD |= 0x02;//定时器0，8位自动重装模块
+  21   1              TH0 = 0xA4;
+  22   1              TL0 = 0xA4;//100US中断一次
+  23   1              TR0 = 1;//启动定时器0
+  24   1      }
+  25          
+  26          /* Timer0 interrupt routine */
+  27          void tm0_isr() interrupt 1 using 1
+  28          {
+  29   1              PWM_T++;
+  30   1              if(PWM_T == 255)                //频率F=1000000/T0溢出时间*255
+  31   1              {
+  32   2                      PWM_T = 0;
+  33   2              }
+  34   1              if(RightMotorSpeed >= PWM_T)
+  35   1              {
+  36   2                      RightMotor_EN = 1;      //使能右马达
+  37   2              }
+  38   1              if(LeftMotorSpeed >= PWM_T)
+  39   1              {
+  40   2                      LeftMotor_EN  = 1;  //使能左马达
+  41   2              }               
+  42   1              if(LeftMotorSpeed < PWM_T)
+  43   1              {
+  44   2                      LeftMotor_EN  = 0;  //禁用左马达
+  45   2              }               
+  46   1              if(RightMotorSpeed < PWM_T)
+  47   1              {
+  48   2                      RightMotor_EN = 0;      //禁用右马达
+  49   2              }       
+  50   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     72    ----
+C51 COMPILER V9.00   TIMER                                                                 07/19/2019 18:03:14 PAGE 2   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

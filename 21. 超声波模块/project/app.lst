@@ -1,0 +1,275 @@
+C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE APP
+OBJECT MODULE PLACED IN ..\output\app.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\app.c BROWSE DEBUG OBJECTEXTEND PRINT(.\app.lst) OBJECT(..\output
+                    -\app.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer_ISR.h"
+   3          #include "LCD1602.h"
+   4          #include "ultrasonic.h"
+   5          #include "Delay.h"
+   6          #include "motor.h"
+   7          #include "Servo.h"
+   8          #include "app.h"
+   9          #include "main.h"
+  10          
+  11          bit Timer1Overflow;     //计数器1溢出标志位
+  12          bit Timer2Overflow; //计数器2溢出标志位
+  13          
+  14          
+  15          uchar code ASCII[13] = "0123456789";
+  16          uchar disbuff[4]={0,0,0,0};//用于分别存放距离的值米，厘米，毫米
+  17          
+  18          uint LeftDistance = 0, RightDistance = 0, FrontDistance = 0; //云台测距距离缓存
+  19          uint My_Distance,RearDistance; //定义新增超声波测距的距离
+  20          
+  21          uint DistBuf[5] = {0};//distance data buffer
+  22          
+  23          uchar code ASCII_2[13] = "0123456789";
+  24          uchar disbuff_2[4]={0,0,0,0};//用于分别存放新增超声波距离的值米，厘米，毫米
+  25          uint  DistBuf_2[5] = {0};//定义新增超声波距离的缓存
+  26          
+  27          /*====================================
+  28          函数名  ：DispDistance(unsigned long Val)
+  29          参数    ：距离
+  30          返回值  ：无
+  31          描述    ：LCD1602显示距离
+  32          显示距离单位：毫米
+  33          ====================================*/
+  34          void DispDistance(unsigned int Val)
+  35          {
+  36   1              if((Val >= 5000) || (Timer1Overflow == 1))//超出测量范围
+  37   1              {
+  38   2                      Timer1Overflow = 0; //清除定时器溢出标志位
+  39   2                      LCD1602_Dis_Str(0, 0, "!!! Out of range"); //LCD1602显示字符串  
+  40   2              }
+  41   1              else
+  42   1              {
+  43   2                      /*显示距离单位毫米*/
+  44   2                      disbuff[0]=Val/1000; //距离数值千位
+  45   2                      disbuff[1]=Val%1000/100;//距离数值百位
+  46   2                      disbuff[2]=Val%100/10;//距离数值十位
+  47   2                      disbuff[3]=Val%10; //距离数值个位
+  48   2                      LCD1602_Dis_Str(0, 0, "Distance:0000 MM"); //显示：Distance:000.0cm
+  49   2                  LCD1602_Dis_OneChar(9, 0,  ASCII[disbuff[0]]); //显示千位
+  50   2                  LCD1602_Dis_OneChar(10, 0, ASCII[disbuff[1]]);      
+  51   2                  LCD1602_Dis_OneChar(11, 0, ASCII[disbuff[2]]);      
+  52   2                  LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]);                              
+  53   2              }               
+  54   1      }
+C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 2   
+
+  55          //冒泡排序
+  56          void bubble(unsigned int *a,unsigned char n) /*定义两个参数：数组首地址与数组大小*/
+  57          {
+  58   1              unsigned int i,j,temp;  
+  59   1              for(i = 0;i < n-1; i++) 
+  60   1              {       
+  61   2                      for(j = i + 1; j < n; j++) /*注意循环的上下限*/
+  62   2                      {
+  63   3                              if(a[i] > a[j])
+  64   3                              {
+  65   4                                      temp = a[i];            
+  66   4                                      a[i] = a[j];            
+  67   4                                      a[j] = temp;                    
+  68   4                              }
+  69   3                      }
+  70   2              }
+  71   1      
+  72   1      }
+  73          /*====================================
+  74          函数名  ：RefreshDistance
+  75          参数    ：无
+  76          返回值  ：经过冒泡排序后的距离
+  77          描述    ：经过5次测距，去除最大值和最小值，取中间3次平均值
+  78          距离单位：毫米
+  79          ====================================*/
+  80          unsigned int RefreshDistance()
+  81          {
+  82   1              uchar num;
+  83   1              uint Dist;
+  84   1              for(num=0; num<5; num++)
+  85   1              {
+  86   2                      DistBuf[num] = GetDistance();
+  87   2                      Delay1ms(60);//测距周期不低于60毫秒     
+  88   2              }
+  89   1              bubble(DistBuf, 5);//
+  90   1              Dist = (DistBuf[1]+DistBuf[2]+DistBuf[3])/3; //去掉最大和最小取中间平均值
+  91   1              return(Dist);
+  92   1      }
+  93          /*红外避障*/
+  94          void IR_Avoid()
+  95          {
+  96   1              if(UAvoidSensorLeft == 0)
+  97   1              {
+  98   2                      SmartCarRight(LeftSpeed, RightSpeed);//右转     
+  99   2              }else if(UAvoidSensorRight == 0)
+ 100   1              {
+ 101   2                      SmartCarLeft(LeftSpeed, RightSpeed);//左转              
+ 102   2              }else
+ 103   1              {
+ 104   2                      SmartCarForward(LeftSpeed, RightSpeed);//前进   
+ 105   2              }
+ 106   1      }
+ 107          /*====================================
+ 108          函数名  ：PTZ_Avoid
+ 109          参数    ：val设置避障触发距离
+ 110          返回值  ：无
+ 111          描述    ：智能小车舵机云台避障
+ 112          距离单位：毫米
+ 113          ====================================*/
+ 114          void PTZ_Avoid(uint val)
+ 115          {
+ 116   1              uint Dis;//距离暂存变量
+C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 3   
+
+ 117   1              Dis = GetDistance();//获取超声波测距距离,单位：毫米
+ 118   1              if(Dis < val)
+ 119   1              {
+ 120   2                      LCD1602_Dis_OneChar(0, 0, 'D');
+ 121   2                      DispDistance(Dis);//LCD1602显示超声波测距距离   
+ 122   2                      SmartCarStops();        //停车
+ 123   2                      Delay1ms(50);
+ 124   2      
+ 125   2                      /*舵机左转测距*/
+ 126   2                      ServoLeft();
+ 127   2                      LeftDistance = RefreshDistance();
+ 128   2                      LCD1602_Dis_OneChar(0, 0, 'L');
+ 129   2                      DispDistance(LeftDistance);//LCD1602显示超声波测距距离
+ 130   2                      Delay1ms(50);
+ 131   2      
+ 132   2                      /*舵机右转测距*/
+ 133   2                      ServoRight();
+ 134   2                      RightDistance = RefreshDistance();
+ 135   2                      LCD1602_Dis_OneChar(0, 0, 'R');
+ 136   2                      DispDistance(RightDistance);//LCD1602显示超声波测距距离
+ 137   2                      Delay1ms(50);
+ 138   2      
+ 139   2                      /*舵机正前方测距*/
+ 140   2                      ServoFront();
+ 141   2                      FrontDistance = RefreshDistance();
+ 142   2                      LCD1602_Dis_OneChar(0, 0, 'F');
+ 143   2                      DispDistance(FrontDistance);//LCD1602显示超声波测距距离
+ 144   2                      Delay1ms(50);
+ 145   2      
+ 146   2      
+ 147   2      
+ 148   2                      if((FrontDistance<100) && (LeftDistance<100) && (RightDistance<100))
+ 149   2                      {
+ 150   3                              do{
+ 151   4                                      SmartCarLeftTurn(255, 255);//原地左转
+ 152   4                                      Delay1ms(50);
+ 153   4                                      /*舵机正前方测距*/
+ 154   4                                      ServoFront();
+ 155   4                                      Dis = RefreshDistance();
+ 156   4                                      LCD1602_Dis_OneChar(0, 0, 'D');
+ 157   4                                      DispDistance(Dis);//LCD1602显示超声波测距距离
+ 158   4                                      Delay1ms(100);          
+ 159   4                              }while(Dis < 200);
+ 160   3                      }else if((FrontDistance>LeftDistance) && (FrontDistance>RightDistance))
+ 161   2                      {
+ 162   3                              LCD1602_Dis_OneChar(0, 0, 'F');
+ 163   3                              DispDistance(FrontDistance);//LCD1602显示超声波测距距离
+ 164   3                              Delay1ms(100);
+ 165   3                              SmartCarForward(LeftSpeed, RightSpeed);//前进
+ 166   3                      }else if(LeftDistance > RightDistance)
+ 167   2                      {
+ 168   3                              LCD1602_Dis_OneChar(0, 0, 'L');
+ 169   3                              DispDistance(LeftDistance);//LCD1602显示超声波测距距离
+ 170   3                              Delay1ms(100);
+ 171   3                              SmartCarLeftTurn(255, 255);//原地左转
+ 172   3                              Delay1ms(80);           
+ 173   3                      }else if(RightDistance > LeftDistance)
+ 174   2                      {
+ 175   3                              LCD1602_Dis_OneChar(0, 0, 'R');
+ 176   3                              DispDistance(RightDistance);//LCD1602显示超声波测距距离
+ 177   3                              Delay1ms(100);
+ 178   3                              SmartCarRightTurn(255, 255);//原地右转
+C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 4   
+
+ 179   3                              Delay1ms(80);   
+ 180   3                      }               
+ 181   2              }
+ 182   1              else
+ 183   1              {
+ 184   2                      for(Dis=0; Dis<1800; Dis++)//测距周期不低于60ms 这里借用Dis变量做循环
+ 185   2                      {
+ 186   3                              IR_Avoid();//红外避障
+ 187   3                      }
+ 188   2              }                       
+ 189   1      }
+ 190          
+ 191          /**************************************/
+ 192           //新超声波模块的距离显示函数，显示在LCD的第二行，第一行显示了原来超声波的距离
+ 193          void My_DispDistance(unsigned int Val)  
+ 194          {
+ 195   1              if((Val >= 2500) || (Timer2Overflow == 1))//超出测量范围
+ 196   1              {
+ 197   2                      Timer2Overflow = 0; //清除定时器溢出标志位
+ 198   2                      LCD1602_Dis_Str(0, 1, "!!! Out of range"); //LCD1602显示字符串  
+ 199   2              }
+ 200   1              else
+ 201   1              {
+ 202   2                      /*显示距离单位毫米*/
+ 203   2                      disbuff_2[0]=Val/1000; //距离数值千位
+ 204   2                      disbuff_2[1]=Val%1000/100;//距离数值百位
+ 205   2                      disbuff_2[2]=Val%100/10;//距离数值十位
+ 206   2                      disbuff_2[3]=Val%10; //距离数值个位
+ 207   2                      LCD1602_Dis_Str(0, 1, "Distance:0000 MM"); //显示：Distance:000.0cm
+ 208   2                  LCD1602_Dis_OneChar(9, 1,  ASCII_2[disbuff_2[0]]); //显示千位
+ 209   2                  LCD1602_Dis_OneChar(10, 1, ASCII_2[disbuff_2[1]]);  
+ 210   2                  LCD1602_Dis_OneChar(11, 1, ASCII_2[disbuff_2[2]]);  
+ 211   2                  LCD1602_Dis_OneChar(12, 1, ASCII_2[disbuff_2[3]]);                          
+ 212   2              }               
+ 213   1      }
+ 214          //新超声波模块的距离刷新函数
+ 215          unsigned int My_RefreshDistance() //
+ 216          {
+ 217   1              uchar num;
+ 218   1              uint Dist;
+ 219   1              for(num=0; num<5; num++)
+ 220   1              {
+ 221   2                      DistBuf_2[num] = My_GetDistance();
+ 222   2                      Delay1ms(60);//测距周期不低于60毫秒     
+ 223   2              }
+ 224   1              bubble(DistBuf_2, 5);//
+ 225   1              Dist = (DistBuf_2[1]+DistBuf_2[2]+DistBuf_2[3])/3; //去掉最大和最小取中间平均值
+ 226   1              return(Dist);
+ 227   1      }
+ 228          
+ 229          
+ 230          void My_TEST(void)
+ 231          {
+ 232   1                      RearDistance = My_RefreshDistance();
+ 233   1      //              LCD1602_Dis_Str(0, 0, "Distance");
+ 234   1                      My_DispDistance(RearDistance);//LCD1602显示超声波测距距离
+ 235   1                      Delay1ms(50);
+ 236   1      }
+ 237          
+ 238          void My_TEST_2(void)
+ 239          {
+ 240   1                      My_Distance = RefreshDistance();
+C51 COMPILER V9.00   APP                                                                   07/07/2024 12:45:00 PAGE 5   
+
+ 241   1                      DispDistance(My_Distance);
+ 242   1                      Delay1ms(50);
+ 243   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1139    ----
+   CONSTANT SIZE    =     60    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     38      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

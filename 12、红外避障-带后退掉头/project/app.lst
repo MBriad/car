@@ -1,0 +1,85 @@
+C51 COMPILER V9.00   APP                                                                   08/01/2019 14:46:39 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE APP
+OBJECT MODULE PLACED IN ..\output\app.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\app.c BROWSE DEBUG OBJECTEXTEND PRINT(.\app.lst) OBJECT(..\output
+                    -\app.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer_ISR.h"
+   3          #include "Delay.h"
+   4          #include "motor.h"
+   5          #include "app.h"
+   6          #include "main.h"
+   7          
+   8          /*====================================
+   9          函数名  ：IR_Avoid4
+  10          参数    ：无
+  11          返回值  ：无
+  12          描述    ：智能小车红外避障-带后退掉头
+  13          ====================================*/
+  14          void IR_Avoid4()
+  15          {
+  16   1              if((AvoidSensorLeft == 0) && (AvoidSensorRight == 1))
+  17   1              /*左边识别到障碍物并且右边未识别到，智能小车右转*/
+  18   1              {
+  19   2                      SmartCarRight(LeftSpeed, RightSpeed);//右转     
+  20   2              }else if((AvoidSensorLeft == 1) && (AvoidSensorRight == 0))
+  21   1              /*左边未识别到障碍物并且右边识别到，智能小车左转*/
+  22   1              {
+  23   2                      SmartCarLeft(LeftSpeed, RightSpeed);//左转              
+  24   2              }else if((AvoidSensorLeft == 0) && (AvoidSensorRight == 0))     
+  25   1              /*左右红外传感器都检测到物体，智能小车先停车后退再原地左转*/
+  26   1              {
+  27   2                      SmartCarStops();//停车
+  28   2                      Delay1ms(100);//延时100ms
+  29   2                      SmartCarBack(LeftSpeed, RightSpeed);//后退
+  30   2                      Delay1ms(50);//延时50ms
+  31   2                      SmartCarLeftTurn(LeftSpeed, RightSpeed);//原地左转
+  32   2                      Delay1ms(50);//延时50ms         
+  33   2              }else //否则前进
+  34   1              {
+  35   2                      SmartCarForward(LeftSpeed, RightSpeed);//前进   
+  36   2              }
+  37   1      }
+  38          
+  39          /*====================================
+  40          函数名  ：IR_Tracking
+  41          参数    ：无
+  42          返回值  ：无
+  43          描述    ：智能小车红外循迹
+  44          ====================================*/
+  45          //void IR_Tracking()
+  46          //{
+  47          //              /*1为识别到黑线*/
+  48          //      if((TrackSensorLeft == 1) && (TrackSensorRight == 1))
+  49          //      {       
+  50          //              SmartCarForward(LeftSpeed, RightSpeed);//前进   
+  51          //      }else if((TrackSensorLeft == 0) && (TrackSensorRight == 1))
+  52          //      {
+  53          //              SmartCarRight(200, RightSpeed);//右转
+  54          //      }else if((TrackSensorLeft == 1) && (TrackSensorRight == 0))
+C51 COMPILER V9.00   APP                                                                   08/01/2019 14:46:39 PAGE 2   
+
+  55          //      {
+  56          //
+  57          //              SmartCarLeft(LeftSpeed, 200);//左转     
+  58          //      }
+  59          //}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     78    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

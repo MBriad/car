@@ -1,0 +1,224 @@
+C51 COMPILER V9.54   APP                                                                   07/11/2026 09:55:04 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE APP
+OBJECT MODULE PLACED IN ..\output\app.obj
+COMPILER INVOKED BY: D:\Users\MBri\Keil5\Core\C51\BIN\C51.EXE ..\source\app.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
+                    -D PRINT(.\app.lst) OBJECT(..\output\app.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "timer_ISR.h"
+   3          #include "LCD1602.h"
+   4          #include "ultrasonic.h"
+   5          #include "Delay.h"
+   6          #include "motor.h"
+   7          #include "Servo.h"
+   8          #include "app.h"
+   9          #include "main.h"
+  10          
+  11          bit Timer1Overflow;
+  12          bit Timer2Overflow;
+  13          
+  14          uchar code ASCII[13] = "0123456789";
+  15          uchar disbuff[4] = {0, 0, 0, 0};
+  16          uint DistBuf[5] = {0};
+  17          
+  18          /* Direction labels for LCD */
+  19          uchar code *dirNames[5] = {
+  20                  "Dir: Front  ",
+  21                  "Dir: Left   ",
+  22                  "Dir: Right  ",
+  23                  "Dir: Left45 ",
+  24                  "Dir: Right45"
+  25          };
+  26          
+  27          /*====================================
+  28            LFSR pseudo-random number generator
+  29            Polynomial: x^8 + x^4 + x^3 + x^2 + 1
+  30          ====================================*/
+  31          static unsigned char lfsr;
+  32          
+  33          void InitRandom(void)
+  34          {
+  35   1              lfsr = TH1 ^ TL1;
+  36   1              if (lfsr == 0)
+  37   1                      lfsr = 0xAA;
+  38   1      }
+  39          
+  40          unsigned char RandomByte(void)
+  41          {
+  42   1              unsigned char fb;
+  43   1              fb = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 4)) & 1;
+  44   1              lfsr = (lfsr >> 1) | (fb << 7);
+  45   1              return lfsr;
+  46   1      }
+  47          
+  48          /*====================================
+  49            LCD1602 display distance
+  50            Unit: mm
+  51          ====================================*/
+  52          void DispDistance(unsigned int Val)
+  53          {
+  54   1              if ((Val >= 5000) || (Timer1Overflow == 1))
+C51 COMPILER V9.54   APP                                                                   07/11/2026 09:55:04 PAGE 2   
+
+  55   1              {
+  56   2                      Timer1Overflow = 0;
+  57   2                      LCD1602_Dis_Str(0, 0, "!!! Out of range");
+  58   2              }
+  59   1              else
+  60   1              {
+  61   2                      disbuff[0] = Val / 1000;
+  62   2                      disbuff[1] = Val % 1000 / 100;
+  63   2                      disbuff[2] = Val % 100 / 10;
+  64   2                      disbuff[3] = Val % 10;
+  65   2                      LCD1602_Dis_Str(0, 0, "Distance:0000 MM");
+  66   2                      LCD1602_Dis_OneChar(9, 0, ASCII[disbuff[0]]);
+  67   2                      LCD1602_Dis_OneChar(10, 0, ASCII[disbuff[1]]);
+  68   2                      LCD1602_Dis_OneChar(11, 0, ASCII[disbuff[2]]);
+  69   2                      LCD1602_Dis_OneChar(12, 0, ASCII[disbuff[3]]);
+  70   2              }
+  71   1      }
+  72          
+  73          /*====================================
+  74            Bubble sort (ascending)
+  75          ====================================*/
+  76          void bubble(unsigned int *a, unsigned char n)
+  77          {
+  78   1              unsigned int i, j, temp;
+  79   1              for (i = 0; i < n - 1; i++)
+  80   1              {
+  81   2                      for (j = i + 1; j < n; j++)
+  82   2                      {
+  83   3                              if (a[i] > a[j])
+  84   3                              {
+  85   4                                      temp = a[i];
+  86   4                                      a[i] = a[j];
+  87   4                                      a[j] = temp;
+  88   4                              }
+  89   3                      }
+  90   2              }
+  91   1      }
+  92          
+  93          /*====================================
+  94            5-sample filtered distance
+  95            Drop max & min, average middle 3
+  96          ====================================*/
+  97          unsigned int RefreshDistance()
+  98          {
+  99   1              uchar num;
+ 100   1              uint Dist;
+ 101   1              for (num = 0; num < 5; num++)
+ 102   1              {
+ 103   2                      DistBuf[num] = GetDistance();
+ 104   2                      Delay1ms(60);
+ 105   2              }
+ 106   1              bubble(DistBuf, 5);
+ 107   1              Dist = (DistBuf[1] + DistBuf[2] + DistBuf[3]) / 3;
+ 108   1              return (Dist);
+ 109   1      }
+ 110          
+ 111          /*====================================
+ 112            Pick 2 distinct directions from 5
+ 113          ====================================*/
+ 114          void PickTwoDirections(unsigned char *d1, unsigned char *d2)
+ 115          {
+ 116   1              *d1 = RandomByte() % 5;
+C51 COMPILER V9.54   APP                                                                   07/11/2026 09:55:04 PAGE 3   
+
+ 117   1              do {
+ 118   2                      *d2 = RandomByte() % 5;
+ 119   2              } while (*d2 == *d1);
+ 120   1      }
+ 121          
+ 122          /*====================================
+ 123            Map direction index to servo angle
+ 124            0=Front, 1=Left(+90), 2=Right(-90),
+ 125            3=Left45(+45), 4=Right45(-45)
+ 126          ====================================*/
+ 127          void SetServo(unsigned char dir)
+ 128          {
+ 129   1              switch (dir)
+ 130   1              {
+ 131   2              case 0: ServoFront();   break;
+ 132   2              case 1: ServoLeft();    break;
+ 133   2              case 2: ServoRight();   break;
+ 134   2              case 3: ServoLeft45();  break;
+ 135   2              case 4: ServoRight45(); break;
+ 136   2              }
+ 137   1      }
+ 138          
+ 139          /*====================================
+ 140            Measure distance in one direction
+ 141          ====================================*/
+ 142          unsigned int MeasureDirection(unsigned char dir)
+ 143          {
+ 144   1              unsigned int dist;
+ 145   1              SetServo(dir);
+ 146   1              Delay1ms(300);
+ 147   1              LCD1602_Dis_Str(0, 1, dirNames[dir]);
+ 148   1              dist = RefreshDistance();
+ 149   1              DispDistance(dist);
+ 150   1              return dist;
+ 151   1      }
+ 152          
+ 153          /*====================================
+ 154            Buzzer alert, then ram target
+ 155          ====================================*/
+ 156          void RamTarget(unsigned char dir)
+ 157          {
+ 158   1              LCD1602_Clear_Screen();
+ 159   1              LCD1602_Dis_Str(0, 0, "Target locked!");
+ 160   1              BUZZER_on;
+ 161   1              Delay1ms(500);
+ 162   1              BUZZER_off;
+ 163   1              SetServo(dir);
+ 164   1              Delay1ms(300);
+ 165   1              LCD1602_Dis_Str(0, 1, "RAMMING!!!     ");
+ 166   1              SmartCarForward(255, 255);
+ 167   1              Delay1ms(3000);
+ 168   1              SmartCarStops();
+ 169   1      }
+ 170          
+ 171          /*====================================
+ 172            Top-level assessment flow:
+ 173            Init PRNG -> Pick 2 dirs -> Measure
+ 174            -> Find nearest -> Ram it
+ 175          ====================================*/
+ 176          void AssessmentRun(void)
+ 177          {
+ 178   1              unsigned char dir1, dir2;
+C51 COMPILER V9.54   APP                                                                   07/11/2026 09:55:04 PAGE 4   
+
+ 179   1              unsigned int dist1, dist2;
+ 180   1              unsigned char bestDir;
+ 181   1      
+ 182   1              InitRandom();
+ 183   1              PickTwoDirections(&dir1, &dir2);
+ 184   1      
+ 185   1              LCD1602_Dis_Str(0, 0, "Measuring...   ");
+ 186   1              dist1 = MeasureDirection(dir1);
+ 187   1              Delay1ms(500);
+ 188   1      
+ 189   1              dist2 = MeasureDirection(dir2);
+ 190   1              Delay1ms(500);
+ 191   1      
+ 192   1              bestDir = (dist2 < dist1) ? dir2 : dir1;
+ 193   1              RamTarget(bestDir);
+ 194   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    785    ----
+   CONSTANT SIZE    =    159    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     25      26
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

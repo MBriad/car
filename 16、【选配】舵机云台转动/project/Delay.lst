@@ -1,0 +1,119 @@
+C51 COMPILER V9.00   DELAY                                                                 08/02/2019 12:08:06 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN ..\output\Delay.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\source\Delay.c BROWSE DEBUG OBJECTEXTEND PRINT(.\Delay.lst) OBJECT(..\ou
+                    -tput\Delay.obj)
+
+line level    source
+
+   1          #include "config.h"
+   2          #include "Delay.h"
+   3          
+   4          //void Delay10us(unsigned char i)       //10us延时函数 启动超声波模块时使用
+   5          //{ 
+   6          //   unsigned char j; 
+   7          //      do{ 
+   8          //              j = 10; 
+   9          //              do{ 
+  10          //                      _nop_(); 
+  11          //              }while(--j); 
+  12          //      }while(--i); 
+  13          //}
+  14          
+  15          void delay(unsigned int z)//毫秒级延时
+  16          {
+  17   1              unsigned int x,y;
+  18   1              for(x = z; x > 0; x--)
+  19   1                      for(y = 114; y > 0 ; y--);
+  20   1      }
+  21          /*舵机方波延时朝向小车正前方*/
+  22          void Delay1550us()              //@11.0592MHz
+  23          {
+  24   1              unsigned char i, j;
+  25   1      
+  26   1              i = 3;
+  27   1              j = 196;
+  28   1              do
+  29   1              {
+  30   2                      while (--j);
+  31   2              } while (--i);
+  32   1      }
+  33          
+  34          void Delay18450us()             //@11.0592MHz
+  35          {
+  36   1              unsigned char i, j;
+  37   1      
+  38   1              _nop_();
+  39   1              i = 34;
+  40   1              j = 16;
+  41   1              do
+  42   1              {
+  43   2                      while (--j);
+  44   2              } while (--i);
+  45   1      }
+  46          /*舵机方波延时向小车右方*/
+  47          void Delay600us()               //@11.0592MHz
+  48          {
+  49   1              unsigned char i, j;
+  50   1      
+  51   1              _nop_();
+  52   1              i = 2;
+  53   1              j = 15;
+  54   1              do
+C51 COMPILER V9.00   DELAY                                                                 08/02/2019 12:08:06 PAGE 2   
+
+  55   1              {
+  56   2                      while (--j);
+  57   2              } while (--i);
+  58   1      }
+  59          void Delay19400us()             //@11.0592MHz
+  60          {
+  61   1              unsigned char i, j;
+  62   1      
+  63   1              _nop_();
+  64   1              i = 35;
+  65   1              j = 197;
+  66   1              do
+  67   1              {
+  68   2                      while (--j);
+  69   2              } while (--i);
+  70   1      }
+  71          /*舵机方波延时朝向小车左方*/
+  72          void Delay17500us()             //@11.0592MHz
+  73          {
+  74   1              unsigned char i, j;
+  75   1      
+  76   1              i = 32;
+  77   1              j = 93;
+  78   1              do
+  79   1              {
+  80   2                      while (--j);
+  81   2              } while (--i);
+  82   1      }
+  83          void Delay2500us()              //@11.0592MHz
+  84          {
+  85   1              unsigned char i, j;
+  86   1      
+  87   1              i = 5;
+  88   1              j = 120;
+  89   1              do
+  90   1              {
+  91   2                      while (--j);
+  92   2              } while (--i);
+  93   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     87    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
